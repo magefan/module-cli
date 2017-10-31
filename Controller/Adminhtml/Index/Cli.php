@@ -78,7 +78,7 @@ class Cli extends \Magento\Backend\App\Action
             }
 
             $logFile = $this->dir->getPath('var') . '/mfcli.txt';
-            exec($c = $command . ' > ' . $logFile, $a, $b);
+            exec($c = 'cd ' . $this->dir->getRoot() . ' && ' . $command . ' > ' . $logFile, $a, $b);
             $message = file_get_contents($logFile);
             if (!$message) {
                 $message = __('Command not found or error occurred.' . PHP_EOL);
