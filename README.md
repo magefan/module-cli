@@ -1,10 +1,12 @@
 # Magento 2 CLI Extension by Magefan
 
-This Magento 2 module allows you to run CLI commands from admin panel. Exec function needs to be enabled in php settings.
+This Magento 2 module allows you to run CLI commands from admin panel (System > Tools > Command Line). You can restrict access to this interface using Magento 2 Access Control List.
+
 ![alt text](https://magefan.com/media/wysiwyg/magento2-cli.png)
 
 ## Requirements
   * Magento Community Edition 2.1.x-2.2.x or Magento Enterprise Edition 2.1.x-2.2.x
+  * Exec function needs to be enabled in PHP settings.
 
 ## Installation Method 1 - Installing via composer
   * Open command line
