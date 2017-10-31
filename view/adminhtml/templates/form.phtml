@@ -1,0 +1,133 @@
+<?php
+/**
+ * Copyright © 2017 Ihor Vansach (ihor@magefan.com). All rights reserved.
+ * See LICENSE.txt for license details (http://opensource.org/licenses/osl-3.0.php).
+ */
+?>
+
+<?php
+	$exec = $block->execExist();
+?>
+<style>
+	#shell-area{margin:0;padding:5px;list-style:none;background:#141414;color:#45D40C;font:.8em 'Andale Mono',Consolas,'Courier New';line-height:1.6em;padding:10px; min-height:500px;max-height:500px;overflow-y: auto;}
+	#shell-area input{width:80%; background: #141414;border: none;padding: 10px;}
+</style>
+
+<div class="admin__scope-old">
+   <div class="entry-edit form-inline">
+      <div class="ui-tabs-panel ui-widget-content ui-corner-bottom" >
+         <div class="entry-edit form-inline">
+            <fieldset class="fieldset admin__fieldset ">
+               <legend class="admin__legend legend">
+                  <span><?php echo __('Current User Identity Verification') ?></span>
+               </legend>
+               <br>
+               <div class="messages">
+               </div>
+               <div class="admin__field field field-current_password  required _required" >
+                  <label class="label admin__field-label" for="user_current_password"><span><?php echo __('Your Password') ?></span></label>
+                  <div class="admin__field-control control">
+                     <input id="user_current_password" name="current_password" value="" title="<?php echo __('Your Password') ?>" class="input-text " type="password" >
+                  </div>
+               </div>
+            </fieldset>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div id="shell-area">
+	<div class="history-hld"></div>
+	<div class="input-hld">
+		<?php if ($exec) { ?>
+			<?php echo __('Enter Command:') ?><input id="command" />
+		<?php } else { ?>
+			<?php echo __('This command line is not accessible. Exec function is not allowed in PHP settings. Please use standard CLI interface.') ?>
+		<?php } ?>
+	</div>
+</div>
+<?php if ($exec) { ?>
+<script>
+	require(['jquery'], function($) {
+		$(function(){
+			$('#shell-area').click(function(){
+				$('#command').focus();
+			})
+		});
+
+		var commandLog = [];
+		var commandLogIndex = 0;
+		function showCommand()
+		{
+			var i = commandLog.length - 1 - commandLogIndex;
+			console.log(i);
+			if (typeof commandLog[i] !== 'undefined') {
+				$('#command').val(commandLog[i])
+			} else {
+				$('#command').val('');
+			}
+		}
+
+		function addCommand()
+		{
+			var $e = $('#command');
+			v = $.trim($e.val());
+			if (v) {
+				commandLog.push(v);
+			}
+			var commandLogIndex = 0;
+			$e.val('');
+		}
+
+		function addContent(c)
+		{
+			addCommand();
+			$('.history-hld').append(c);
+			$('#shell-area').scrollTop($('#shell-area')[0].scrollHeight);
+		}
+
+		var loading = false;
+		$('#command').keydown(function(e) {
+			var $e = $(this);
+			if(e.which == 40) { //up
+				commandLogIndex--;
+				if (commandLogIndex < 0) {
+					commandLogIndex = 0;
+				}
+				showCommand();
+			} else if(e.which == 38) { //down
+				showCommand();
+				commandLogIndex++;
+				if (commandLogIndex >= commandLog.length) {
+					commandLogIndex = commandLog.length-1;
+				}
+			} else if(e.which == 13) { //enter
+		    	if (loading) return;
+		    	loading = true;
+
+		    	if (!$.trim($e.val())) {
+		    		addContent('<br/>');
+		    		loading = false;
+		    		return;
+		    	}
+
+		        $.ajax({
+				    url: '<?php echo $block->getUrl('*/*/cli') ?>',
+				    data : {command:$e.val(),current_password:$('#user_current_password').val()},
+				    type: 'POST',
+				    dataType: 'json',
+				    showLoader: true
+				}).done(function (data) {
+					loading = false;
+				    if (data && data.message) {
+				    	addContent('<strong>$ </strong>' + $e.val() + '<br/>');
+				    	addContent(data.message);
+				    } else {
+				    	alert('<?php echo __('Unexpected error. Please refresh the page or try later.') ?>');
+				    }
+				});
+		    }
+		});
+	})
+</script>
+<?php } ?>
