@@ -14,7 +14,7 @@ This Magento 2 module allows you to run CLI commands from admin panel (System > 
   * Run command: composer require magefan/module-cli
 
 ## Installation Method 2 - Installing using archive
-  * Download [ZIP Archive](https://github.com/magefan/module-cli/archive/master.zip)
+  * Download [ZIP Archive](https://magefan.com/magento2-cli-extension)
   * Extract files
   * In your Magento 2 root directory create folder app/code/Magefan/Cli
   * Copy files and folders from archive to that folder
@@ -47,5 +47,5 @@ The code is licensed under [Open Software License ("OSL") v. 3.0](http://opensou
   * [Magento 2 Login As Customer Extension](https://magefan.com/login-as-customer-magento-2-extension)
   * [Magento 2 Conflict Detector Extension](https://magefan.com/magento2-conflict-detector)
   * [Magento 2 Lazy Load Extension](https://github.com/magefan/module-lazyload)
-  * [Magento 2 Rocket JavaScript Extension](https://github.com/magefan/module-rocketjavascript)
-  * [Magento 2 CLI Extension](https://github.com/magefan/module-cli)
+  * [Magento 2 Rocket JavaScript Extension](https://magefan.com/rocket-javascript-deferred-javascript)
+  * [Magento 2 CLI Extension](https://magefan.com/magento2-cli-extension)
