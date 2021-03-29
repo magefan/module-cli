@@ -6,6 +6,8 @@
 
 namespace Magefan\Cli\Controller\Adminhtml\Index;
 
+use Magefan\Cli\Model\Config;
+
 class Cli extends \Magento\Backend\App\Action
 {
     const ADMIN_RESOURCE = 'Magefan_Cli::elements';
@@ -33,38 +35,60 @@ class Cli extends \Magento\Backend\App\Action
     protected $authSession;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
      * Constructor
      *
-     * @param \Magento\Backend\App\Action\Context  $context
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
      * @param \Magento\Framework\Filesystem\DirectoryList $dir
      * @param \Magento\Backend\Model\Auth\Session $authSession
+     * @param Config $config
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Framework\Filesystem\DirectoryList $dir,
-        \Magento\Backend\Model\Auth\Session $authSession
+        \Magento\Backend\Model\Auth\Session $authSession,
+        Config $config
     ) {
         $this->resultPageFactory = $resultPageFactory;
         $this->jsonHelper = $jsonHelper;
         $this->dir = $dir;
         $this->authSession = $authSession;
+        $this->config = $config;
         parent::__construct($context);
     }
 
     /**
      * Execute view action
      *
-     * @return \Magento\Framework\Controller\ResultInterface
+     * @return \Magento\Framework\Controller\ResultInterface|null
      */
     public function execute()
     {
+        if (!$this->config->isEnabled()) {
+            return null;
+        }
+
         try {
             $this->validateUser();
 
             $command = $this->getRequest()->getParam('command');
+            $phpCommand = $this->config->getPhpCommand();
+
+            if ($phpCommand) {
+                if (stripos($command, 'php') === 0) {
+                    $command = str_replace('php', $phpCommand, $command);
+                } elseif (stripos($command, 'bin/magento') === 0) {
+                    $command = $phpCommand . ' ' . $command;
+                }
+            }
 
             $blackCommands = ['admin:user'];
             foreach ($blackCommands as $bc) {
