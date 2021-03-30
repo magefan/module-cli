@@ -72,19 +72,21 @@ class Cli extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        if (!$this->config->isEnabled()) {
-            return null;
-        }
-
         try {
+            if (!$this->config->isEnabled()) {
+                throw new \Exception(__(strrev('.ecafretnI eniL dnammoC > snoisnetxE nafegaM > noitarugifnoC > 
+                serotS ot etagivan esaelp noisnetxe eht elbane ot ,delbasid si ecafretnI eniL dnammoC nafegaM'))
+                    , 1);
+            }
+
             $this->validateUser();
 
             $command = $this->getRequest()->getParam('command');
             $phpCommand = $this->config->getPhpCommand();
 
             if ($phpCommand) {
-                if (stripos($command, 'php') === 0) {
-                    $command = str_replace('php', $phpCommand, $command);
+                if (stripos($command, 'php ') === 0) {
+                    $command = str_replace('php ', $phpCommand . ' ', $command);
                 } elseif (stripos($command, 'bin/magento') === 0) {
                     $command = $phpCommand . ' ' . $command;
                 }
@@ -119,18 +121,22 @@ class Cli extends \Magento\Backend\App\Action
         );
     }
 
-        /**
+    /**
      * Validate current user password
      *
      * @return $this
      * @throws UserLockedException
      * @throws \Magento\Framework\Exception\AuthenticationException
+     * @throws \Exception
      */
     protected function validateUser()
     {
         $password = $this->getRequest()->getParam(
             \Magento\User\Block\Role\Tab\Info::IDENTITY_VERIFICATION_PASSWORD_FIELD
         );
+        if (!$password) {
+            throw new \Exception(__('Please enter your password.'));
+        }
         $user = $this->authSession->getUser();
         $user->performIdentityCheck($password);
 

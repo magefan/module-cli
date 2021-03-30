@@ -16,15 +16,17 @@
 	$exec = $block->execExist();
     $mostUsed = $block->getMagentoCommands()['most_used'];
     $commands = $block->getMagentoCommands()['commands'];
+
+    $url = $block->getUrl('adminhtml/system_config/edit', ['section' => 'mfcli']);
 ?>
 
 <?php if (!$block->isModuleEnabled()) {?>
-<style>
-    .notification{margin-top:50px;padding:25px;border:1px solid red; background-color: #DD434A}
-</style>
-
-<div class="notification">
-    <p><?= __(strrev('.ecafretnI eniL dnammoC > snoisnetxE nafegaM > noitarugifnoC > serotS ot etagivan esaelp noisnetxe eht elbane ot ,delbasid si ecafretnI eniL dnammoC nafegaM')) ?></p>
+<div class="messages">
+    <div class="message message-error error">
+        <div data-ui-id="messages-message-error">
+            <?= $block->escapeHtml(__(strrev(' ot etagivan esaelp noisnetxe eht elbane ot ,delbasid si ecafretnI eniL dnammoC nafegaM'))) ?><a href="<?= $block->escapeUrl($url) ?>" target="_blank"><?= $block->escapeHtml(__(strrev('.ecafretnI eniL dnammoC > snoisnetxE nafegaM > noitarugifnoC > serotS'))) ?></a>
+        </div>
+    </div>
 </div>
 <?php } else { ?>
 <style>
@@ -32,6 +34,8 @@
 	#shell-area input{width:80%; background: #141414;border:none;padding:10px;line-height:15px}
     #command-list ul{float:right;height:200px;width:20%;min-height:500px;max-height:500px;}
     #command-list ul{overflow:hidden;overflow-y:scroll;overflow-x:scroll;}
+    #command-list li {padding-bottom: 10px}
+    #command-list li .execute {padding-left: 10px}
     .row:after {content:'';display:table;clear:both;}
     .execute {cursor: pointer;}
 </style>
@@ -42,15 +46,15 @@
          <div class="entry-edit form-inline">
             <fieldset class="fieldset admin__fieldset ">
                <legend class="admin__legend legend">
-                  <span><?php echo __('Current User Identity Verification') ?></span>
+                  <span><?php echo $block->escapeHtml(__('Current User Identity Verification')) ?></span>
                </legend>
                <br>
                <div class="messages">
                </div>
                <div class="admin__field field field-current_password  required _required" >
-                  <label class="label admin__field-label" for="user_current_password"><span><?php echo __('Your Password') ?></span></label>
+                  <label class="label admin__field-label" for="user_current_password"><span><?php echo $block->escapeHtml(__('Your Password')) ?></span></label>
                   <div class="admin__field-control control">
-                     <input id="user_current_password" name="current_password" value="" title="<?php echo __('Your Password') ?>" class="input-text " type="password" >
+                     <input id="user_current_password" name="current_password" value="" title="<?php echo $block->escapeHtml(__('Your Password')) ?>" class="input-text " type="password" >
                   </div>
                </div>
             </fieldset>
@@ -64,23 +68,29 @@
         <div class="history-hld"></div>
         <div class="input-hld">
             <?php if ($exec) { ?>
-                <?php echo __('Enter Command:') ?><input id="command" />
+                <?php echo $block->escapeHtml(__('Enter Command:')) ?><input id="command" />
             <?php } else { ?>
-                <?php echo __('This command line is not accessible. Exec function is not allowed in PHP settings. Please use standard CLI interface.') ?>
+                <?php echo $block->escapeHtml(__('This command line is not accessible. Exec function is not allowed in PHP settings. Please use standard CLI interface.')) ?>
             <?php } ?>
         </div>
     </div>
     <div id="command-list">
         <ul>
             <?php if (count($mostUsed)) { ?>
-                <p>Most Used Commands</p>
+                <p><?= $block->escapeHtml(__('Most Used Commands')) ?></p>
                 <?php foreach ($mostUsed as $command) { ?>
-                    <li><?= $command ?> <span class="execute" data-name="<?= $command ?>">▶</span></li>
+                    <li>
+                        <span class="execute-label"><?= $block->escapeHtml($command) ?></span>
+                        <span class="execute" title="<?= $block->escapeHtml('Execute') ?>" data-name="<?= $block->escapeHtml($command) ?>">▶</span>
+                    </li>
                 <?php } ?>
                 <br><hr><br>
             <?php } ?>
            <?php foreach ($commands as $command) { ?>
-               <li><?= $command ?> <span class="execute" data-name="<?= $command ?>">▶</span></li>
+               <li>
+                   <span class="execute-label"><?= $block->escapeHtml($command) ?></span>
+                   <span class="execute"  title="<?= $block->escapeHtml('Execute') ?>" data-name="<?= $block->escapeHtml($command) ?>">▶</span>
+               </li>
            <?php } ?>
         </ul>
     </div>
@@ -152,7 +162,7 @@
 		    	}
 
 		        $.ajax({
-				    url: '<?php echo $block->getUrl('*/*/cli') ?>',
+				    url: '<?php echo $block->escapeUrl($block->getUrl('*/*/cli')) ?>',
 				    data : {command:$e.val(),current_password:$('#user_current_password').val()},
 				    type: 'POST',
 				    dataType: 'json',
@@ -163,7 +173,7 @@
 				    	addContent('<strong>$ </strong>' + $e.val() + '<br/>');
 				    	addContent(data.message);
 				    } else {
-				    	alert('<?php echo __('Unexpected error. Please refresh the page or try later.') ?>');
+				    	alert('<?php echo $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) ?>');
 				    }
 				});
 		    }
@@ -181,7 +191,7 @@
                         loading = true;
 
                         $.ajax({
-                            url: '<?php echo $block->getUrl('*/*/cli') ?>',
+                            url: '<?php echo $block->escapeUrl($block->getUrl('*/*/cli')) ?>',
                             data : {command:'php ' + command,current_password:$('#user_current_password').val()},
                             type: 'POST',
                             dataType: 'json',
@@ -192,12 +202,10 @@
                                 addContent('<strong>$ </strong>' + command + '<br/>');
                                 addContent(data.message);
                             } else {
-                                alert('<?php echo __('Unexpected error. Please refresh the page or try later.') ?>');
+                                alert('<?php echo $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) ?>');
                             }
                         });
-                    },
-                    cancel: function(){},
-                    always: function(){}
+                    }
                 },
                 buttons: [{
                     text: $.mage.__('Cancel'),

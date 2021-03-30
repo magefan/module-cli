@@ -45,7 +45,7 @@ class Index extends \Magento\Backend\App\Action
     {
         $phpCommand = $this->config->getPhpCommand();
 
-        if ($phpCommand) {
+        if ($phpCommand && $this->config->isEnabled()) {
             $this->messageManager->addNoticeMessage(__('Commands will be executed by custom PHP binary: ')
                 . $phpCommand
             );

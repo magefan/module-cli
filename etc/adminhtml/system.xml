@@ -27,17 +27,11 @@
                 </field>
                 <field id="php" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>PHP Command</label>
-                    <depends>
-                        <field id="enabled">1</field>
-                    </depends>
                     <comment>If you use some custom PHP binary you can enter PHP command here. E.g. /usr/bin/php7.2 -dmemory_limit=-1.</comment>
                 </field>
                 <field id="commands" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Most Used Magento 2 Commands</label>
                     <source_model>Magefan\Cli\Model\Config\Source\Commands</source_model>
-                    <depends>
-                        <field id="enabled">1</field>
-                    </depends>
                 </field>
             </group>
         </section>
