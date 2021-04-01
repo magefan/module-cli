@@ -29,6 +29,11 @@ class Config
     const XML_PATH_MOST_USED_COMMANDS = 'mfcli/general/commands';
 
     /**
+     * @var string
+     */
+    const XML_PATH_NON_ADMIN_COMMANDS = 'mfcli/general/non_admin_commands';
+
+    /**
      * @var ScopeConfigInterface
      */
     private $scopeConfig;
@@ -79,6 +84,24 @@ class Config
     {
         $commands = $this->getConfig(
             self::XML_PATH_MOST_USED_COMMANDS,
+            $storeId
+        );
+
+        if ($commands) {
+            $commands = explode(',', $commands);
+        }
+
+        return $commands;
+    }
+
+    /**
+     * @param null $storeId
+     * @return array|null
+     */
+    public function getNonAdminCommands($storeId = null): ?array
+    {
+        $commands = $this->getConfig(
+            self::XML_PATH_NON_ADMIN_COMMANDS,
             $storeId
         );
 

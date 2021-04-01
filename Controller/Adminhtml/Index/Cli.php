@@ -84,6 +84,18 @@ class Cli extends \Magento\Backend\App\Action
             $command = $this->getRequest()->getParam('command');
             $phpCommand = $this->config->getPhpCommand();
 
+            if (!$this->_authorization->isAllowed('Magefan_Cli::admin')) {
+                $needle = 'bin/magento ';
+                $position = stripos($command, $needle);
+                $needleLen = strlen($needle);
+                $commandStart = $position + $needleLen;
+                $magentoCommand = substr($command, $commandStart);
+
+                if ($position === false || !in_array($magentoCommand, $this->config->getNonAdminCommands())) {
+                    throw new \Exception(__('You don\'t have permission to execute this command.'), 1);
+                }
+            }
+
             if ($phpCommand) {
                 if (stripos($command, 'php ') === 0) {
                     $command = str_replace('php ', $phpCommand . ' ', $command);
@@ -95,7 +107,7 @@ class Cli extends \Magento\Backend\App\Action
             $blackCommands = ['admin:user'];
             foreach ($blackCommands as $bc) {
                 if (strpos($command, $bc) !== false) {
-                    throw new \Exception(__('Error: Cannot run this command due to security reason.'), 1);
+                    throw new \Exception(__('Error: Cannot run this command due to security reasons.'), 1);
                 }
             }
 
@@ -107,7 +119,7 @@ class Cli extends \Magento\Backend\App\Action
             exec($c = 'cd ' . $this->dir->getRoot() . ' && ' . $command . ' > ' . $logFile, $a, $b);
             $message = file_get_contents($logFile);
             if (!$message) {
-                $message = __('Command not found or error occurred.' . PHP_EOL);
+                $message = __('Command not found or error occurred.') . PHP_EOL;
             }
             unlink($logFile);
         } catch (\Exception $e) {

@@ -9,6 +9,7 @@ namespace Magefan\Cli\Block\Adminhtml;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\Console\CommandListInterface;
 use Magefan\Cli\Model\Config;
+use Magento\Framework\AuthorizationInterface;
 
 class Form extends \Magento\Framework\View\Element\Template
 {
@@ -23,20 +24,28 @@ class Form extends \Magento\Framework\View\Element\Template
     private $config;
 
     /**
+     * @var AuthorizationInterface
+     */
+    private $authorization;
+
+    /**
      * Form constructor.
      * @param Template\Context $context
      * @param CommandListInterface $commandList
      * @param Config $config
+     * @param AuthorizationInterface $authorization
      * @param array $data
      */
     public function __construct(
         Template\Context $context,
         CommandListInterface $commandList,
         Config $config,
+        AuthorizationInterface $authorization,
         array $data = []
     ) {
         $this->commandList = $commandList;
         $this->config = $config;
+        $this->authorization = $authorization;
         parent::__construct($context, $data);
     }
 
@@ -47,7 +56,7 @@ class Form extends \Magento\Framework\View\Element\Template
      */
     protected function _prepareLayout()
     {
-        $this->pageConfig->getTitle()->set(__('Command Line'));
+        $this->pageConfig->getTitle()->set(__('Command Line by Magefan'));
     }
 
 
@@ -65,14 +74,23 @@ class Form extends \Magento\Framework\View\Element\Template
      */
     public function getMagentoCommands()
     {
-        $sortedCommands = [];
+        $sortedCommands = [
+            'most_used' => [],
+            'commands' => []
+        ];
         $mostUsedCommands = $this->config->getMostUsedCommands();
         $commands = $this->commandList->getCommands();
+
+        if (!$this->authorization->isAllowed('Magefan_Cli::admin')) {
+            $commands = $this->config->getNonAdminCommands() ? $this->config->getNonAdminCommands() : [];
+        }
+
         foreach ($commands as $command) {
-            if (in_array($command->getName(), $mostUsedCommands)) {
-                $sortedCommands['most_used'][] = $command->getName();
+            $command = gettype($command) == 'string' ? $command : $command->getName();
+            if (in_array($command, $mostUsedCommands)) {
+                $sortedCommands['most_used'][] = $command;
             } else {
-                $sortedCommands['commands'][] = $command->getName();
+                $sortedCommands['commands'][] = $command;
             }
         }
 

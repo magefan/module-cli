@@ -11,7 +11,9 @@
             <resource id="Magento_Backend::admin">
                 <resource id="Magento_Backend::system">
                     <resource id="Magento_Backend::tools">
-                        <resource id="Magefan_Cli::elements" title="Command Line " translate="title"  sortOrder="60" />
+                        <resource id="Magefan_Cli::elements" title="Command Line" translate="title" sortOrder="60">
+                            <resource id="Magefan_Cli::admin" title="Command Line Admin" translate="title" sortOrder="70" />
+                        </resource>
                     </resource>
                 </resource>
                 <resource id="Magento_Backend::stores">

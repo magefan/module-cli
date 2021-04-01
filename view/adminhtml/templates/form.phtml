@@ -14,9 +14,7 @@
  * @codingStandardsIgnoreStart
  */
 	$exec = $block->execExist();
-    $mostUsed = $block->getMagentoCommands()['most_used'];
-    $commands = $block->getMagentoCommands()['commands'];
-
+	$magentoCommands = $block->getMagentoCommands();
     $url = $block->getUrl('adminhtml/system_config/edit', ['section' => 'mfcli']);
 ?>
 
@@ -24,11 +22,23 @@
 <div class="messages">
     <div class="message message-error error">
         <div data-ui-id="messages-message-error">
-            <?= $block->escapeHtml(__(strrev(' ot etagivan esaelp noisnetxe eht elbane ot ,delbasid si ecafretnI eniL dnammoC nafegaM'))) ?><a href="<?= $block->escapeUrl($url) ?>" target="_blank"><?= $block->escapeHtml(__(strrev('.ecafretnI eniL dnammoC > snoisnetxE nafegaM > noitarugifnoC > serotS'))) ?></a>
+            <?= $block->escapeHtml(__(strrev(' ot etagivan esaelp noisnetxe eht elbane ot ,delbasid si ecafretnI eniL dnammoC nafegaM'))) ?><a href="<?= $block->escapeUrl($url) ?>" target="_blank"><?= $block->escapeHtml(__(strrev('ecafretnI eniL dnammoC > snoisnetxE nafegaM > noitarugifnoC > serotS'))) ?></a>
         </div>
     </div>
 </div>
-<?php } else { ?>
+<?php } elseif (!count(array_filter($magentoCommands))) { ?>
+    <div class="messages">
+        <div class="message message-error error">
+            <div data-ui-id="messages-message-error">
+                <?= $block->escapeHtml(__('There are no allowed commands to execute for the current user.')) ?>
+            </div>
+        </div>
+    </div>
+<?php } else {?>
+<?php
+    $mostUsed = $magentoCommands['most_used'];
+    $commands = $magentoCommands['commands'];
+?>
 <style>
 	#shell-area{float:left;width:78%;margin:0;list-style:none;background:#141414;color:#45D40C;font:.8em 'Andale Mono',Consolas,'Courier New';line-height:1.6em;padding:10px; min-height:500px;max-height:500px;overflow-y: auto;}
 	#shell-area input{width:80%; background: #141414;border:none;padding:10px;line-height:15px}
@@ -70,7 +80,7 @@
             <?php if ($exec) { ?>
                 <?php echo $block->escapeHtml(__('Enter Command:')) ?><input id="command" />
             <?php } else { ?>
-                <?php echo $block->escapeHtml(__('This command line is not accessible. Exec function is not allowed in PHP settings. Please use standard CLI interface.')) ?>
+                <?php echo $block->escapeHtml(__('This command line is not accessible. Exec function is not allowed in PHP settings. Please use the standard CLI interface.')) ?>
             <?php } ?>
         </div>
     </div>
@@ -79,18 +89,22 @@
             <?php if (count($mostUsed)) { ?>
                 <p><?= $block->escapeHtml(__('Most Used Commands')) ?></p>
                 <?php foreach ($mostUsed as $command) { ?>
-                    <li>
-                        <span class="execute-label"><?= $block->escapeHtml($command) ?></span>
-                        <span class="execute" title="<?= $block->escapeHtml('Execute') ?>" data-name="<?= $block->escapeHtml($command) ?>">▶</span>
-                    </li>
+                    <?php if ($command) { ?>
+                        <li>
+                            <span class="execute-label"><?= $block->escapeHtml($command) ?></span>
+                            <span class="execute" title="<?= $block->escapeHtml('Execute') ?>" data-name="<?= $block->escapeHtml($command) ?>">▶</span>
+                        </li>
+                    <?php } ?>
                 <?php } ?>
                 <br><hr><br>
             <?php } ?>
            <?php foreach ($commands as $command) { ?>
-               <li>
-                   <span class="execute-label"><?= $block->escapeHtml($command) ?></span>
-                   <span class="execute"  title="<?= $block->escapeHtml('Execute') ?>" data-name="<?= $block->escapeHtml($command) ?>">▶</span>
-               </li>
+               <?php if ($command) { ?>
+                   <li>
+                       <span class="execute-label"><?= $block->escapeHtml($command) ?></span>
+                       <span class="execute"  title="<?= $block->escapeHtml('Execute') ?>" data-name="<?= $block->escapeHtml($command) ?>">▶</span>
+                   </li>
+               <?php } ?>
            <?php } ?>
         </ul>
     </div>
@@ -183,7 +197,7 @@
 		    var command = 'bin/magento ' + $(this).attr('data-name');
             var loading = false;
             confirmation({
-                title: $.mage.__('Execute Command: ' + command),
+                title: $.mage.__('Execute Command:') + ' ' + command,
                 content: $.mage.__('Are you sure you want to do this?'),
                 actions: {
                     confirm: function(){
