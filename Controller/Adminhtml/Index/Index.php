@@ -1,7 +1,7 @@
 <?php
 /**
- * Copyright © 2017 Ihor Vansach (ihor@magefan.com). All rights reserved.
- * See LICENSE.txt for license details (http://opensource.org/licenses/osl-3.0.php).
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
  */
 
 namespace Magefan\Cli\Controller\Adminhtml\Index;
@@ -47,8 +47,7 @@ class Index extends \Magento\Backend\App\Action
 
         if ($phpCommand && $this->config->isEnabled()) {
             $this->messageManager->addNoticeMessage(__('Commands will be executed by custom PHP binary: ')
-                . $phpCommand
-            );
+                . $phpCommand);
         }
 
         return $this->resultPageFactory->create();

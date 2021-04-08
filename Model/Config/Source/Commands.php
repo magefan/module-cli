@@ -30,7 +30,7 @@ class Commands implements OptionSourceInterface
 
     public function __construct(
         CommandListInterface $commandList
-    ){
+    ) {
         $this->commandList = $commandList;
     }
 

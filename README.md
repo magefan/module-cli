@@ -41,7 +41,7 @@ Please contact us to get a quote
 https://magefan.com/contact
 
 ## License
-The code is licensed under [Open Software License ("OSL") v. 3.0](http://opensource.org/licenses/osl-3.0.php).
+The code is licensed under [EULA](https://magefan.com/end-user-license-agreement).
 
 ## Other [Magento 2 Extensions](https://magefan.com/magento2-extensions) by Magefan
   * [Magento 2 Blog Extension](https://magefan.com/magento2-blog-extension)

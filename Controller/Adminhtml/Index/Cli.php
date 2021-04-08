@@ -1,7 +1,7 @@
 <?php
 /**
- * Copyright © 2017 Ihor Vansach (ihor@magefan.com). All rights reserved.
- * See LICENSE.txt for license details (http://opensource.org/licenses/osl-3.0.php).
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
  */
 
 namespace Magefan\Cli\Controller\Adminhtml\Index;
@@ -74,9 +74,11 @@ class Cli extends \Magento\Backend\App\Action
     {
         try {
             if (!$this->config->isEnabled()) {
-                throw new \Exception(__(strrev('.ecafretnI eniL dnammoC > snoisnetxE nafegaM > noitarugifnoC > 
-                serotS ot etagivan esaelp noisnetxe eht elbane ot ,delbasid si ecafretnI eniL dnammoC nafegaM'))
-                    , 1);
+                throw new \Exception(
+                    __(strrev('.ecafretnI eniL dnammoC > snoisnetxE nafegaM > noitarugifnoC > 
+                serotS ot etagivan esaelp noisnetxe eht elbane ot ,delbasid si ecafretnI eniL dnammoC nafegaM')),
+                    1
+                );
             }
 
             $this->validateUser();
