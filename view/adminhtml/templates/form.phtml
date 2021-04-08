@@ -6,11 +6,48 @@
 ?>
 
 <?php
+/**
+ * CLI template
+ *
+ * @var $block \Magefan\Cli\Block\Adminhtml\Form
+ *
+ * @codingStandardsIgnoreStart
+ */
 	$exec = $block->execExist();
+	$magentoCommands = $block->getMagentoCommands();
+    $url = $block->getUrl('adminhtml/system_config/edit', ['section' => 'mfcli']);
+?>
+
+<?php if (!$block->isModuleEnabled()) {?>
+<div class="messages">
+    <div class="message message-error error">
+        <div data-ui-id="messages-message-error">
+            <?= $block->escapeHtml(__(strrev(' ot etagivan esaelp noisnetxe eht elbane ot ,delbasid si ecafretnI eniL dnammoC nafegaM'))) ?><a href="<?= $block->escapeUrl($url) ?>" target="_blank"><?= $block->escapeHtml(__(strrev('ecafretnI eniL dnammoC > snoisnetxE nafegaM > noitarugifnoC > serotS'))) ?></a>
+        </div>
+    </div>
+</div>
+<?php } elseif (!count(array_filter($magentoCommands))) { ?>
+    <div class="messages">
+        <div class="message message-error error">
+            <div data-ui-id="messages-message-error">
+                <?= $block->escapeHtml(__('There are no allowed commands to execute for the current user.')) ?>
+            </div>
+        </div>
+    </div>
+<?php } else {?>
+<?php
+    $mostUsed = $magentoCommands['most_used'];
+    $commands = $magentoCommands['commands'];
 ?>
 <style>
-	#shell-area{margin:0;padding:5px;list-style:none;background:#141414;color:#45D40C;font:.8em 'Andale Mono',Consolas,'Courier New';line-height:1.6em;padding:10px; min-height:500px;max-height:500px;overflow-y: auto;}
+	#shell-area{float:left;width:78%;margin:0;list-style:none;background:#141414;color:#45D40C;font:.8em 'Andale Mono',Consolas,'Courier New';line-height:1.6em;padding:10px; min-height:500px;max-height:500px;overflow-y: auto;}
 	#shell-area input{width:80%; background: #141414;border:none;padding:10px;line-height:15px}
+    #command-list ul{float:right;height:200px;width:20%;min-height:500px;max-height:500px;}
+    #command-list ul{overflow:hidden;overflow-y:scroll;overflow-x:scroll;}
+    #command-list li {padding-bottom: 10px}
+    #command-list li .execute {padding-left: 10px}
+    .row:after {content:'';display:table;clear:both;}
+    .execute {cursor: pointer;}
 </style>
 
 <div class="admin__scope-old">
@@ -19,15 +56,15 @@
          <div class="entry-edit form-inline">
             <fieldset class="fieldset admin__fieldset ">
                <legend class="admin__legend legend">
-                  <span><?php echo __('Current User Identity Verification') ?></span>
+                  <span><?php echo $block->escapeHtml(__('Current User Identity Verification')) ?></span>
                </legend>
                <br>
                <div class="messages">
                </div>
                <div class="admin__field field field-current_password  required _required" >
-                  <label class="label admin__field-label" for="user_current_password"><span><?php echo __('Your Password') ?></span></label>
+                  <label class="label admin__field-label" for="user_current_password"><span><?php echo $block->escapeHtml(__('Your Password')) ?></span></label>
                   <div class="admin__field-control control">
-                     <input id="user_current_password" name="current_password" value="" title="<?php echo __('Your Password') ?>" class="input-text " type="password" >
+                     <input id="user_current_password" name="current_password" value="" title="<?php echo $block->escapeHtml(__('Your Password')) ?>" class="input-text " type="password" >
                   </div>
                </div>
             </fieldset>
@@ -36,19 +73,46 @@
    </div>
 </div>
 
-<div id="shell-area">
-	<div class="history-hld"></div>
-	<div class="input-hld">
-		<?php if ($exec) { ?>
-			<?php echo __('Enter Command:') ?><input id="command" />
-		<?php } else { ?>
-			<?php echo __('This command line is not accessible. Exec function is not allowed in PHP settings. Please use standard CLI interface.') ?>
-		<?php } ?>
-	</div>
+<div class="row">
+    <div id="shell-area">
+        <div class="history-hld"></div>
+        <div class="input-hld">
+            <?php if ($exec) { ?>
+                <?php echo $block->escapeHtml(__('Enter Command:')) ?><input id="command" />
+            <?php } else { ?>
+                <?php echo $block->escapeHtml(__('This command line is not accessible. Exec function is not allowed in PHP settings. Please use the standard CLI interface.')) ?>
+            <?php } ?>
+        </div>
+    </div>
+    <div id="command-list">
+        <ul>
+            <?php if (count($mostUsed)) { ?>
+                <p><?= $block->escapeHtml(__('Most Used Commands')) ?></p>
+                <?php foreach ($mostUsed as $command) { ?>
+                    <?php if ($command) { ?>
+                        <li>
+                            <span class="execute-label"><?= $block->escapeHtml($command) ?></span>
+                            <span class="execute" title="<?= $block->escapeHtml('Execute') ?>" data-name="<?= $block->escapeHtml($command) ?>">▶</span>
+                        </li>
+                    <?php } ?>
+                <?php } ?>
+                <br><hr><br>
+            <?php } ?>
+           <?php foreach ($commands as $command) { ?>
+               <?php if ($command) { ?>
+                   <li>
+                       <span class="execute-label"><?= $block->escapeHtml($command) ?></span>
+                       <span class="execute"  title="<?= $block->escapeHtml('Execute') ?>" data-name="<?= $block->escapeHtml($command) ?>">▶</span>
+                   </li>
+               <?php } ?>
+           <?php } ?>
+        </ul>
+    </div>
 </div>
+
 <?php if ($exec) { ?>
 <script>
-	require(['jquery'], function($) {
+	require(['jquery', 'Magento_Ui/js/modal/confirm'], function($, confirmation) {
 		$(function(){
 			$('#shell-area').click(function(){
 				$('#command').focus();
@@ -60,7 +124,7 @@
 		function showCommand()
 		{
 			var i = commandLog.length - 1 - commandLogIndex;
-			console.log(i);
+			// console.log(i);
 			if (typeof commandLog[i] !== 'undefined') {
 				$('#command').val(commandLog[i])
 			} else {
@@ -112,7 +176,7 @@
 		    	}
 
 		        $.ajax({
-				    url: '<?php echo $block->getUrl('*/*/cli') ?>',
+				    url: '<?php echo $block->escapeUrl($block->getUrl('*/*/cli')) ?>',
 				    data : {command:$e.val(),current_password:$('#user_current_password').val()},
 				    type: 'POST',
 				    dataType: 'json',
@@ -123,11 +187,56 @@
 				    	addContent('<strong>$ </strong>' + $e.val() + '<br/>');
 				    	addContent(data.message);
 				    } else {
-				    	alert('<?php echo __('Unexpected error. Please refresh the page or try later.') ?>');
+				    	alert('<?php echo $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) ?>');
 				    }
 				});
 		    }
 		});
-	})
+
+		$('.execute').click(function() {
+		    var command = 'bin/magento ' + $(this).attr('data-name');
+            var loading = false;
+            confirmation({
+                title: $.mage.__('Execute Command:') + ' ' + command,
+                content: $.mage.__('Are you sure you want to do this?'),
+                actions: {
+                    confirm: function(){
+                        if (loading) return;
+                        loading = true;
+
+                        $.ajax({
+                            url: '<?php echo $block->escapeUrl($block->getUrl('*/*/cli')) ?>',
+                            data : {command:'php ' + command,current_password:$('#user_current_password').val()},
+                            type: 'POST',
+                            dataType: 'json',
+                            showLoader: true
+                        }).done(function (data) {
+                            loading = false;
+                            if (data && data.message) {
+                                addContent('<strong>$ </strong>' + command + '<br/>');
+                                addContent(data.message);
+                            } else {
+                                alert('<?php echo $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) ?>');
+                            }
+                        });
+                    }
+                },
+                buttons: [{
+                    text: $.mage.__('Cancel'),
+                    class: 'action-secondary dismiss',
+                    click: function (event) {
+                        this.closeModal(event);
+                    }
+                }, {
+                    text: $.mage.__('OK'),
+                    class: 'action primary accept',
+                    click: function (event) {
+                        this.closeModal(event, true);
+                    }
+                }]
+            });
+        })
+	});
 </script>
+<?php } ?>
 <?php } ?>

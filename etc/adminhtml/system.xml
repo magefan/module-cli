@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ */
+ -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="mfcli" translate="label" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Command Line Interface</label>
+            <tab>magefan</tab>
+            <resource>Magefan_Cli::mfcli_config</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>General Configuration</label>
+                <field id="version" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <frontend_model>Magefan\Cli\Block\Adminhtml\System\Config\Form\Info</frontend_model>
+                </field>
+                <field id="enabled" translate="label" type="select" sortOrder="15" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Extension</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="key" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Product Key</label>
+                    <frontend_model>Magefan\Community\Block\Adminhtml\System\Config\Form\ProductKeyField</frontend_model>
+                </field>
+                <field id="php" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>PHP Command</label>
+                    <comment>If you use some custom PHP binary you can enter PHP command here. E.g. /usr/bin/php7.2 -dmemory_limit=-1.</comment>
+                </field>
+                <field id="commands" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Most Used Magento 2 Commands</label>
+                    <source_model>Magefan\Cli\Model\Config\Source\Commands</source_model>
+                </field>
+                <field id="non_admin_commands" translate="label comment" type="multiselect" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Allowed Commands For Managers</label>
+                    <source_model>Magefan\Cli\Model\Config\Source\Commands</source_model>
+                    <comment>Admin users with no "Command Line Admin" access will be able to run only these commands.</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

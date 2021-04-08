@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <mfcli>
+            <general>
+                <enabled>0</enabled>
+                <mfmodule>Cli</mfmodule>
+                <mftype>1</mftype>
+                <commands>cache:flush,indexer:reindex</commands>
+                <non_admin_commands>cache:flush,indexer:reindex</non_admin_commands>
+            </general>
+        </mfcli>
+    </default>
+</config>
