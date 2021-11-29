@@ -7,6 +7,6 @@
  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
-        <add id="Magefan_Cli::elements" title="Command Line by Magefan" translate="title" module="Magefan_Cli" parent="Magento_Backend::system_tools" action="mfcli/index" sortOrder="60" resource="Magefan_Cli::elements"/>
+        <add id="Magefan_Cli::elements" title="Command Line" translate="title" module="Magefan_Cli" parent="Magento_Backend::system_tools" action="mfcli/index" sortOrder="60" resource="Magefan_Cli::elements"/>
     </menu>
 </config>
