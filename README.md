@@ -2,6 +2,7 @@
 
 [![Total Downloads](https://poser.pugx.org/magefan/module-cli/downloads)](https://packagist.org/packages/magefan/module-cli)
 [![Latest Stable Version](https://poser.pugx.org/magefan/module-cli/v/stable)](https://packagist.org/packages/magefan/module-cli)
+
 <img width="150" height="100" src="https://magefan.com/media/wysiwyg/made_in_ukraine.jpg">
 
 
