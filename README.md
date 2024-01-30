@@ -7,10 +7,12 @@
 
 <img width="150" height="100" src="https://magefan.com/media/wysiwyg/made_in_ukraine.jpg">
 
+<img align="right" width="120" height="120" src="https://cm.magefan.com/catalog/product/cache/28b407cef1668fd0bdd6f36db3e8e2f0/i/c/icon-cli-extension_1.jpg">
 
-This Magento 2 module allows you to run CLI commands from admin panel (System > Tools > Command Line) using exec php function. You can restrict access to this interface using Magento 2 Access Control List. We recommend to use it ONLY on dev environments as it is not securely to run exec.
+[Magento 2 CLI module](https://magefan.com/magento2-cli-extension) allows you to run CLI commands from admin panel (System > Tools > Command Line) using exec php function. You can restrict access to this interface using Magento 2 Access Control List. We recommend to use it ONLY on dev environments as it is not securely to run exec.
 
-<a href="https://magefan.com/magento2-cli-extension"><img width="190" height="70" src="https://cm.magefan.com/wysiwyg/products/download-magefan-extensions.png"></a>
+
+<a href="https://magefan.com/magento2-cli-extension"><img width="190" height="70" src="https://cm.magefan.com/wysiwyg/products/download-magefan-extensions.png"></a><a href="https://magefan.com/magento2-cli-extension#live-demo"><img width="190" height="70" src="https://cm.magefan.com/wysiwyg/products/magefan-live-demo.png"></a>
 
 ![alt text](https://magefan.com/media/wysiwyg/magento2-cli.png)
 
