@@ -1,4 +1,4 @@
-# Magento 2 CLI Extension by Magefan
+# Magento 2 Command Line Extension by Magefan
 
 [![Total Downloads](https://poser.pugx.org/magefan/module-cli/downloads)](https://packagist.org/packages/magefan/module-cli)
 [![Latest Stable Version](https://poser.pugx.org/magefan/module-cli/v/stable)](https://packagist.org/packages/magefan/module-cli)
