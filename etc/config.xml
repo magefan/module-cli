@@ -12,6 +12,7 @@
                 <enabled>0</enabled>
                 <mfmodule>Cli</mfmodule>
                 <mftype>1</mftype>
+                <php/>
                 <commands>cache:flush,indexer:reindex</commands>
                 <non_admin_commands>cache:flush,indexer:reindex</non_admin_commands>
             </general>
