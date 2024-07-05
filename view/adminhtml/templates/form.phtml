@@ -10,12 +10,14 @@
  * CLI template
  *
  * @var $block \Magefan\Cli\Block\Adminhtml\Form
+ * @var $mfSecureRenderer \Magefan\Community\Api\SecureHtmlRendererInterface
  *
  * @codingStandardsIgnoreStart
  */
 	$exec = $block->execExist();
 	$magentoCommands = $block->getMagentoCommands();
     $url = $block->getUrl('adminhtml/system_config/edit', ['section' => 'mfcli']);
+    $script = '';
 ?>
 
 <?php if (!$block->isModuleEnabled()) {?>
@@ -111,8 +113,9 @@
 </div>
 
 <?php if ($exec) { ?>
-<script>
-	require(['jquery', 'Magento_Ui/js/modal/confirm'], function($, confirmation) {
+
+    <?php $script .= "
+        	require(['jquery', 'Magento_Ui/js/modal/confirm'], function($, confirmation) {
 		$(function(){
 			$('#shell-area').click(function(){
 				$('#command').focus();
@@ -176,7 +179,7 @@
 		    	}
 
 		        $.ajax({
-				    url: '<?php echo $block->escapeUrl($block->getUrl('*/*/cli')) ?>',
+				    url: '" . $block->escapeUrl($block->getUrl('*/*/cli')) . "',
 				    data : {command:$e.val(),current_password:$('#user_current_password').val()},
 				    type: 'POST',
 				    dataType: 'json',
@@ -187,7 +190,7 @@
 				    	addContent('<strong>$ </strong>' + $e.val() + '<br/>');
 				    	addContent(data.message);
 				    } else {
-				    	alert('<?php echo $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) ?>');
+				    	alert('" . $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) . "');
 				    }
 				});
 		    }
@@ -205,7 +208,7 @@
                         loading = true;
 
                         $.ajax({
-                            url: '<?php echo $block->escapeUrl($block->getUrl('*/*/cli')) ?>',
+                            url: '" . $block->escapeUrl($block->getUrl('*/*/cli')) . "',
                             data : {command:'php ' + command,current_password:$('#user_current_password').val()},
                             type: 'POST',
                             dataType: 'json',
@@ -216,7 +219,7 @@
                                 addContent('<strong>$ </strong>' + command + '<br/>');
                                 addContent(data.message);
                             } else {
-                                alert('<?php echo $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) ?>');
+                                alert('" . $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) . "');
                             }
                         });
                     }
@@ -237,6 +240,8 @@
             });
         })
 	});
-</script>
+    "; ?>
+
+    <?= /* @noEscape */ $mfSecureRenderer->renderTag('script', [], $script, false) ?>
 <?php } ?>
 <?php } ?>
