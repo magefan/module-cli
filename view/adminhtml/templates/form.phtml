@@ -137,13 +137,13 @@
 
 		function addCommand()
 		{
-			var $e = $('#command');
-			v = $.trim($e.val());
+			var e = $('#command');
+			v = $.trim(e.val());
 			if (v) {
 				commandLog.push(v);
 			}
 			var commandLogIndex = 0;
-			$e.val('');
+			e.val('');
 		}
 
 		function addContent(c)
@@ -155,7 +155,7 @@
 
 		var loading = false;
 		$('#command').keydown(function(e) {
-			var $e = $(this);
+			var e = $(this);
 			if(e.which == 40) { //up
 				commandLogIndex--;
 				if (commandLogIndex < 0) {
@@ -172,7 +172,7 @@
 		    	if (loading) return;
 		    	loading = true;
 
-		    	if (!$.trim($e.val())) {
+		    	if (!$.trim(e.val())) {
 		    		addContent('<br/>');
 		    		loading = false;
 		    		return;
@@ -180,14 +180,14 @@
 
 		        $.ajax({
 				    url: '" . $block->escapeUrl($block->getUrl('*/*/cli')) . "',
-				    data : {command:$e.val(),current_password:$('#user_current_password').val()},
+				    data : {command:e.val(),current_password:$('#user_current_password').val()},
 				    type: 'POST',
 				    dataType: 'json',
 				    showLoader: true
 				}).done(function (data) {
 					loading = false;
 				    if (data && data.message) {
-				    	addContent('<strong>$ </strong>' + $e.val() + '<br/>');
+				    	addContent('<strong>$ </strong>' + e.val() + '<br/>');
 				    	addContent(data.message);
 				    } else {
 				    	alert('" . $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) . "');
