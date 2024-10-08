@@ -7,6 +7,7 @@
 namespace Magefan\Cli\Controller\Adminhtml\Index;
 
 use Magefan\Cli\Model\Config;
+use Magento\Framework\Data\Form\FormKey;
 
 class Cli extends \Magento\Backend\App\Action
 {
@@ -40,6 +41,11 @@ class Cli extends \Magento\Backend\App\Action
     private $config;
 
     /**
+     * @var FormKey
+     */
+    private $formKey;
+
+    /**
      * Constructor
      *
      * @param \Magento\Backend\App\Action\Context $context
@@ -55,13 +61,15 @@ class Cli extends \Magento\Backend\App\Action
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Framework\Filesystem\DirectoryList $dir,
         \Magento\Backend\Model\Auth\Session $authSession,
-        Config $config
+        Config $config,
+        FormKey $formKey
     ) {
         $this->resultPageFactory = $resultPageFactory;
         $this->jsonHelper = $jsonHelper;
         $this->dir = $dir;
         $this->authSession = $authSession;
         $this->config = $config;
+        $this->formKey = $formKey;
         parent::__construct($context);
     }
 
@@ -75,7 +83,7 @@ class Cli extends \Magento\Backend\App\Action
         try {
             if (!$this->config->isEnabled()) {
                 throw new \Exception(
-                    __(strrev('.ecafretnI eniL dnammoC > snoisnetxE nafegaM > noitarugifnoC > 
+                    __(strrev('.ecafretnI eniL dnammoC > snoisnetxE nafegaM > noitarugifnoC >
                 serotS ot etagivan esaelp noisnetxe eht elbane ot ,delbasid si ecafretnI eniL dnammoC nafegaM')),
                     1
                 );
@@ -118,7 +126,8 @@ class Cli extends \Magento\Backend\App\Action
             }
 
             $logFile = $this->dir->getPath('var') . '/mfcli.txt';
-            exec($c = 'cd ' . $this->dir->getRoot() . ' && ' . $command . ' &> ' . $logFile, $a, $b);
+            exec($c = 'cd ' . $this->dir->getRoot() . ' && ' . $command . ' > ' . $logFile . ' 2>&1', $a, $b);
+
             $message = file_get_contents($logFile);
             if (!$message) {
                 $message = __('Command not found or error occurred.') . PHP_EOL;
@@ -128,7 +137,10 @@ class Cli extends \Magento\Backend\App\Action
             $message = $e->getMessage() . PHP_EOL;
         }
 
-        $response = ['message' => nl2br($message)];
+        $response = [
+            'message' => nl2br($message),
+            'newFormKey' => $this->formKey->getFormKey()
+        ];
 
         return $this->getResponse()->representJson(
             $this->jsonHelper->jsonEncode($response)
