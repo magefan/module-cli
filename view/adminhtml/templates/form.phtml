@@ -218,6 +218,11 @@
                             } else {
                                 alert('<?php echo $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) ?>');
                             }
+
+                            if (data && data.newFormKey) {
+                                FORM_KEY = data.newFormKey;
+                                document.querySelector('input[name="form_key"]').value = FORM_KEY;
+                            }
                         });
                     }
                 },
