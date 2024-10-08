@@ -10,22 +10,24 @@
  * CLI template
  *
  * @var $block \Magefan\Cli\Block\Adminhtml\Form
+ * @var $mfSecureRenderer \Magefan\Community\Api\SecureHtmlRendererInterface
  *
  * @codingStandardsIgnoreStart
  */
-	$exec = $block->execExist();
-	$magentoCommands = $block->getMagentoCommands();
-    $url = $block->getUrl('adminhtml/system_config/edit', ['section' => 'mfcli']);
+$exec = $block->execExist();
+$magentoCommands = $block->getMagentoCommands();
+$url = $block->getUrl('adminhtml/system_config/edit', ['section' => 'mfcli']);
+$script = '';
 ?>
 
 <?php if (!$block->isModuleEnabled()) {?>
-<div class="messages">
-    <div class="message message-error error">
-        <div data-ui-id="messages-message-error">
-            <?= $block->escapeHtml(__(strrev(' ot etagivan esaelp noisnetxe eht elbane ot ,delbasid si ecafretnI eniL dnammoC nafegaM'))) ?><a href="<?= $block->escapeUrl($url) ?>" target="_blank"><?= $block->escapeHtml(__(strrev('ecafretnI eniL dnammoC > snoisnetxE nafegaM > noitarugifnoC > serotS'))) ?></a>
+    <div class="messages">
+        <div class="message message-error error">
+            <div data-ui-id="messages-message-error">
+                <?= $block->escapeHtml(__(strrev(' ot etagivan esaelp noisnetxe eht elbane ot ,delbasid si ecafretnI eniL dnammoC nafegaM'))) ?><a href="<?= $block->escapeUrl($url) ?>" target="_blank"><?= $block->escapeHtml(__(strrev('ecafretnI eniL dnammoC > snoisnetxE nafegaM > noitarugifnoC > serotS'))) ?></a>
+            </div>
         </div>
     </div>
-</div>
 <?php } elseif (!count(array_filter($magentoCommands))) { ?>
     <div class="messages">
         <div class="message message-error error">
@@ -35,84 +37,85 @@
         </div>
     </div>
 <?php } else {?>
-<?php
+    <?php
     $mostUsed = $magentoCommands['most_used'];
     $commands = $magentoCommands['commands'];
-?>
-<style>
-	#shell-area{float:left;width:78%;margin:0;list-style:none;background:#141414;color:#45D40C;font:.8em 'Andale Mono',Consolas,'Courier New';line-height:1.6em;padding:10px; min-height:500px;max-height:500px;overflow-y: auto;}
-	#shell-area input{width:80%; background: #141414;border:none;padding:10px;line-height:15px}
-    #command-list ul{float:right;height:200px;width:20%;min-height:500px;max-height:500px;}
-    #command-list ul{overflow:hidden;overflow-y:scroll;overflow-x:scroll;}
-    #command-list li {padding-bottom: 10px}
-    #command-list li .execute {padding-left: 10px}
-    .row:after {content:'';display:table;clear:both;}
-    .execute {cursor: pointer;}
-</style>
+    ?>
+    <style>
+        #shell-area{float:left;width:78%;margin:0;list-style:none;background:#141414;color:#45D40C;font:.8em 'Andale Mono',Consolas,'Courier New';line-height:1.6em;padding:10px; min-height:500px;max-height:500px;overflow-y: auto;}
+        #shell-area input{width:80%; background: #141414;border:none;padding:10px;line-height:15px}
+        #command-list ul{float:right;height:200px;width:20%;min-height:500px;max-height:500px;}
+        #command-list ul{overflow:hidden;overflow-y:scroll;overflow-x:scroll;}
+        #command-list li {padding-bottom: 10px}
+        #command-list li .execute {padding-left: 10px}
+        .row:after {content:'';display:table;clear:both;}
+        .execute {cursor: pointer;}
+    </style>
 
-<div class="admin__scope-old">
-   <div class="entry-edit form-inline">
-      <div class="ui-tabs-panel ui-widget-content ui-corner-bottom" >
-         <div class="entry-edit form-inline">
-            <fieldset class="fieldset admin__fieldset ">
-               <legend class="admin__legend legend">
-                  <span><?php echo $block->escapeHtml(__('Current User Identity Verification')) ?></span>
-               </legend>
-               <br>
-               <div class="messages">
-               </div>
-               <div class="admin__field field field-current_password  required _required" >
-                  <label class="label admin__field-label" for="user_current_password"><span><?php echo $block->escapeHtml(__('Your Password')) ?></span></label>
-                  <div class="admin__field-control control">
-                     <input id="user_current_password" name="current_password" value="" title="<?php echo $block->escapeHtml(__('Your Password')) ?>" class="input-text " type="password" >
-                  </div>
-               </div>
-            </fieldset>
-         </div>
-      </div>
-   </div>
-</div>
-
-<div class="row">
-    <div id="shell-area">
-        <div class="history-hld"></div>
-        <div class="input-hld">
-            <?php if ($exec) { ?>
-                <?php echo $block->escapeHtml(__('Enter Command:')) ?><input id="command" />
-            <?php } else { ?>
-                <?php echo $block->escapeHtml(__('This command line is not accessible. Exec function is not allowed in PHP settings. Please use the standard CLI interface.')) ?>
-            <?php } ?>
+    <div class="admin__scope-old">
+        <div class="entry-edit form-inline">
+            <div class="ui-tabs-panel ui-widget-content ui-corner-bottom" >
+                <div class="entry-edit form-inline">
+                    <fieldset class="fieldset admin__fieldset ">
+                        <legend class="admin__legend legend">
+                            <span><?php echo $block->escapeHtml(__('Current User Identity Verification')) ?></span>
+                        </legend>
+                        <br>
+                        <div class="messages">
+                        </div>
+                        <div class="admin__field field field-current_password  required _required" >
+                            <label class="label admin__field-label" for="user_current_password"><span><?php echo $block->escapeHtml(__('Your Password')) ?></span></label>
+                            <div class="admin__field-control control">
+                                <input id="user_current_password" name="current_password" value="" title="<?php echo $block->escapeHtml(__('Your Password')) ?>" class="input-text " type="password" >
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
         </div>
     </div>
-    <div id="command-list">
-        <ul>
-            <?php if (count($mostUsed)) { ?>
-                <p><?= $block->escapeHtml(__('Most Used Commands')) ?></p>
-                <?php foreach ($mostUsed as $command) { ?>
+
+    <div class="row">
+        <div id="shell-area">
+            <div class="history-hld"></div>
+            <div class="input-hld">
+                <?php if ($exec) { ?>
+                    <?php echo $block->escapeHtml(__('Enter Command:')) ?><input id="command" />
+                <?php } else { ?>
+                    <?php echo $block->escapeHtml(__('This command line is not accessible. Exec function is not allowed in PHP settings. Please use the standard CLI interface.')) ?>
+                <?php } ?>
+            </div>
+        </div>
+        <div id="command-list">
+            <ul>
+                <?php if (count($mostUsed)) { ?>
+                    <p><?= $block->escapeHtml(__('Most Used Commands')) ?></p>
+                    <?php foreach ($mostUsed as $command) { ?>
+                        <?php if ($command) { ?>
+                            <li>
+                                <span class="execute-label"><?= $block->escapeHtml($command) ?></span>
+                                <span class="execute" title="<?= $block->escapeHtml('Execute') ?>" data-name="<?= $block->escapeHtml($command) ?>">▶</span>
+                            </li>
+                        <?php } ?>
+                    <?php } ?>
+                    <br><hr><br>
+                <?php } ?>
+                <?php foreach ($commands as $command) { ?>
                     <?php if ($command) { ?>
                         <li>
                             <span class="execute-label"><?= $block->escapeHtml($command) ?></span>
-                            <span class="execute" title="<?= $block->escapeHtml('Execute') ?>" data-name="<?= $block->escapeHtml($command) ?>">▶</span>
+                            <span class="execute"  title="<?= $block->escapeHtml('Execute') ?>" data-name="<?= $block->escapeHtml($command) ?>">▶</span>
                         </li>
                     <?php } ?>
                 <?php } ?>
-                <br><hr><br>
-            <?php } ?>
-           <?php foreach ($commands as $command) { ?>
-               <?php if ($command) { ?>
-                   <li>
-                       <span class="execute-label"><?= $block->escapeHtml($command) ?></span>
-                       <span class="execute"  title="<?= $block->escapeHtml('Execute') ?>" data-name="<?= $block->escapeHtml($command) ?>">▶</span>
-                   </li>
-               <?php } ?>
-           <?php } ?>
-        </ul>
+            </ul>
+        </div>
     </div>
-</div>
 
-<?php if ($exec) { ?>
-<script>
-	require(['jquery', 'Magento_Ui/js/modal/confirm'], function($, confirmation) {
+    <?php if ($exec) { ?>
+
+        <?php $script .= "
+        	require(['jquery', 'Magento_Ui/js/modal/confirm'], function($, confirmation) {
 		$(function(){
 			$('#shell-area').click(function(){
 				$('#command').focus();
@@ -134,13 +137,13 @@
 
 		function addCommand()
 		{
-			var $e = $('#command');
-			v = $.trim($e.val());
+			var e = $('#command');
+			v = $.trim(e.val());
 			if (v) {
 				commandLog.push(v);
 			}
 			var commandLogIndex = 0;
-			$e.val('');
+			e.val('');
 		}
 
 		function addContent(c)
@@ -152,7 +155,7 @@
 
 		var loading = false;
 		$('#command').keydown(function(e) {
-			var $e = $(this);
+			var e = $(this);
 			if(e.which == 40) { //up
 				commandLogIndex--;
 				if (commandLogIndex < 0) {
@@ -169,25 +172,25 @@
 		    	if (loading) return;
 		    	loading = true;
 
-		    	if (!$.trim($e.val())) {
+		    	if (!$.trim(e.val())) {
 		    		addContent('<br/>');
 		    		loading = false;
 		    		return;
 		    	}
 
 		        $.ajax({
-				    url: '<?php echo $block->escapeUrl($block->getUrl('*/*/cli')) ?>',
-				    data : {command:$e.val(),current_password:$('#user_current_password').val()},
+				    url: '" . $block->escapeUrl($block->getUrl('*/*/cli')) . "',
+				    data : {command:e.val(),current_password:$('#user_current_password').val()},
 				    type: 'POST',
 				    dataType: 'json',
 				    showLoader: true
 				}).done(function (data) {
 					loading = false;
 				    if (data && data.message) {
-				    	addContent('<strong>$ </strong>' + $e.val() + '<br/>');
+				    	addContent('<strong>$ </strong>' + e.val() + '<br/>');
 				    	addContent(data.message);
 				    } else {
-				    	alert('<?php echo $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) ?>');
+				    	alert('" . $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) . "');
 				    }
 				});
 		    }
@@ -205,7 +208,7 @@
                         loading = true;
 
                         $.ajax({
-                            url: '<?php echo $block->escapeUrl($block->getUrl('*/*/cli')) ?>',
+                            url: '" . $block->escapeUrl($block->getUrl('*/*/cli')) . "',
                             data : {command:'php ' + command,current_password:$('#user_current_password').val()},
                             type: 'POST',
                             dataType: 'json',
@@ -216,12 +219,12 @@
                                 addContent('<strong>$ </strong>' + command + '<br/>');
                                 addContent(data.message);
                             } else {
-                                alert('<?php echo $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) ?>');
+                                alert('" . $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) . "');
                             }
 
                             if (data && data.newFormKey) {
                                 FORM_KEY = data.newFormKey;
-                                document.querySelector('input[name="form_key"]').value = FORM_KEY;
+                                document.querySelector('input[name=\"form_key\"]').value = FORM_KEY;
                             }
                         });
                     }
@@ -242,6 +245,8 @@
             });
         })
 	});
-</script>
-<?php } ?>
+    "; ?>
+
+        <?= /* @noEscape */ $mfSecureRenderer->renderTag('script', [], $script, false) ?>
+    <?php } ?>
 <?php } ?>
