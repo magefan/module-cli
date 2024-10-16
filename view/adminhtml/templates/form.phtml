@@ -137,13 +137,13 @@ $script = '';
 
 		function addCommand()
 		{
-			var e = $('#command');
-			v = $.trim(e.val());
+			var el = $('#command');
+			v = $.trim(el.val());
 			if (v) {
 				commandLog.push(v);
 			}
 			var commandLogIndex = 0;
-			e.val('');
+			el.val('');
 		}
 
 		function addContent(c)
@@ -154,25 +154,25 @@ $script = '';
 		}
 
 		var loading = false;
-		$('#command').keydown(function(e) {
-			var e = $(this);
-			if(e.which == 40) { //up
+		$('#command').keydown(function(event) {
+			var el = $(this);
+			if(event.which == 40) { //up
 				commandLogIndex--;
 				if (commandLogIndex < 0) {
 					commandLogIndex = 0;
 				}
 				showCommand();
-			} else if(e.which == 38) { //down
+			} else if(event.which == 38) { //down
 				showCommand();
 				commandLogIndex++;
 				if (commandLogIndex >= commandLog.length) {
 					commandLogIndex = commandLog.length-1;
 				}
-			} else if(e.which == 13) { //enter
+			} else if(event.which == 13) { //enter
 		    	if (loading) return;
 		    	loading = true;
 
-		    	if (!$.trim(e.val())) {
+		    	if (!$.trim(el.val())) {
 		    		addContent('<br/>');
 		    		loading = false;
 		    		return;
@@ -180,14 +180,14 @@ $script = '';
 
 		        $.ajax({
 				    url: '" . $block->escapeUrl($block->getUrl('*/*/cli')) . "',
-				    data : {command:e.val(),current_password:$('#user_current_password').val()},
+				    data : {command:el.val(),current_password:$('#user_current_password').val()},
 				    type: 'POST',
 				    dataType: 'json',
 				    showLoader: true
 				}).done(function (data) {
 					loading = false;
 				    if (data && data.message) {
-				    	addContent('<strong>$ </strong>' + e.val() + '<br/>');
+				    	addContent('<strong>$ </strong>' + el.val() + '<br/>');
 				    	addContent(data.message);
 				    } else {
 				    	alert('" . $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) . "');
