@@ -7,6 +7,9 @@
  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
+        <tab id="magefan" translate="label" sortOrder="100">
+            <label>Magefan</label>
+        </tab>
         <section id="mfcli" translate="label" sortOrder="10019577670" showInDefault="1" showInWebsite="1" showInStore="1">
             <class>separator-top</class>
             <label>Command Line Interface</label>
@@ -23,7 +26,7 @@
                 </field>
                 <field id="key" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Product Key</label>
-                    <frontend_model>Magefan\Community\Block\Adminhtml\System\Config\Form\ProductKeyField</frontend_model>
+                    <comment>Optional. Leave empty for free usage.</comment>
                 </field>
                 <field id="php" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
                     <label>PHP Command</label>
@@ -37,6 +40,10 @@
                     <label>Allowed Commands For Managers</label>
                     <source_model>Magefan\Cli\Model\Config\Source\Commands</source_model>
                     <comment>Admin users with no "Command Line Admin" access will be able to run only these commands.</comment>
+                </field>
+                <field id="log_lifetime" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Log Lifetime (days)</label>
+                    <comment>Number of days to keep command execution logs. Default is 30.</comment>
                 </field>
             </group>
         </section>

@@ -10,7 +10,6 @@
  * CLI template
  *
  * @var $block \Magefan\Cli\Block\Adminhtml\Form
- * @var $mfSecureRenderer \Magefan\Community\Api\SecureHtmlRendererInterface
  *
  * @codingStandardsIgnoreStart
  */
@@ -112,75 +111,71 @@ $script = '';
         </div>
     </div>
 
-    <?php if ($exec) { ?>
-
-        <?php $script .= "
-        	require(['jquery', 'Magento_Ui/js/modal/confirm'], function($, confirmation) {
-		$(function(){
-			$('#shell-area').click(function(){
-				$('#command').focus();
-			})
-		});
-
-		var commandLog = [];
-		var commandLogIndex = 0;
-		function showCommand()
-		{
+    <?php if ($exec) {
+        $commandLogJson = json_encode($block->getCommandHistory(200));
+        $cliUrlJs = json_encode($block->getUrl('*/*/cli'));
+        $errorMsgJs = json_encode((string)$block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')));
+        $formKeyJs = json_encode($block->getFormKeyValue());
+        $script .= "
+        var mfcliFormKey = " . $formKeyJs . ";
+        var mfcliUrl = " . $cliUrlJs . ";
+        var mfcliErrorMsg = " . $errorMsgJs . ";
+        	require(['jquery', 'domReady!', 'Magento_Ui/js/modal/confirm'], function($, _, confirmation) {
+        var commandLog = " . $commandLogJson . ";
+        var commandLogIndex = 0;
+		function showCommand() {
 			var i = commandLog.length - 1 - commandLogIndex;
-			// console.log(i);
 			if (typeof commandLog[i] !== 'undefined') {
-				$('#command').val(commandLog[i])
+				$('#command').val(commandLog[i]);
 			} else {
 				$('#command').val('');
 			}
 		}
-
-		function addCommand()
-		{
+		function addCommand() {
 			var el = $('#command');
-			v = $.trim(el.val());
+			var v = $.trim(el.val());
 			if (v) {
 				commandLog.push(v);
 			}
-			var commandLogIndex = 0;
+			commandLogIndex = 0;
 			el.val('');
 		}
-
-		function addContent(c)
-		{
+		function addContent(c) {
 			addCommand();
 			$('.history-hld').append(c);
 			$('#shell-area').scrollTop($('#shell-area')[0].scrollHeight);
 		}
-
-		var loading = false;
-		$('#command').keydown(function(event) {
+		$(function(){
+			$('#shell-area').on('click', function(){ $('#command').focus(); });
+			var loading = false;
+			$('#command').on('keydown', function(event) {
 			var el = $(this);
-			if(event.which == 40) { //up
+			if (event.which === 40) {
+				event.preventDefault();
 				commandLogIndex--;
-				if (commandLogIndex < 0) {
-					commandLogIndex = 0;
-				}
+				if (commandLogIndex < 0) commandLogIndex = 0;
 				showCommand();
-			} else if(event.which == 38) { //down
+				return;
+			}
+			if (event.which === 38) {
+				event.preventDefault();
 				showCommand();
 				commandLogIndex++;
-				if (commandLogIndex >= commandLog.length) {
-					commandLogIndex = commandLog.length-1;
-				}
-			} else if(event.which == 13) { //enter
+				if (commandLogIndex >= commandLog.length) commandLogIndex = commandLog.length - 1;
+				return;
+			}
+			if (event.which === 13) {
+				event.preventDefault();
 		    	if (loading) return;
 		    	loading = true;
-
 		    	if (!$.trim(el.val())) {
 		    		addContent('<br/>');
 		    		loading = false;
 		    		return;
 		    	}
-
 		        $.ajax({
-				    url: '" . $block->escapeUrl($block->getUrl('*/*/cli')) . "',
-				    data : {command:el.val(),current_password:$('#user_current_password').val()},
+				    url: mfcliUrl,
+				    data: {command:el.val(),current_password:$('#user_current_password').val(),form_key:mfcliFormKey},
 				    type: 'POST',
 				    dataType: 'json',
 				    showLoader: true
@@ -190,42 +185,53 @@ $script = '';
 				    	addContent('<strong>$ </strong>' + el.val() + '<br/>');
 				    	addContent(data.message);
 				    } else {
-				    	alert('" . $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) . "');
+				    	alert(mfcliErrorMsg);
 				    }
+				    if (data && data.newFormKey) {
+				    	mfcliFormKey = data.newFormKey;
+				    	var formKeyInput = document.querySelector('input[name=\"form_key\"]');
+				    	if (formKeyInput) formKeyInput.value = data.newFormKey;
+				    }
+				}).fail(function() {
+					loading = false;
+					alert(mfcliErrorMsg);
 				});
-		    }
-		});
+			}
+			});
 
-		$('.execute').click(function() {
-		    var command = 'bin/magento ' + $(this).attr('data-name');
-            var loading = false;
-            confirmation({
+			$('.execute').on('click', function() {
+			    var command = 'bin/magento ' + $(this).attr('data-name');
+			    var loadingExecute = false;
+                confirmation({
                 title: $.mage.__('Execute Command:') + ' ' + command,
                 content: $.mage.__('Are you sure you want to do this?'),
                 actions: {
                     confirm: function(){
-                        if (loading) return;
-                        loading = true;
+                        if (loadingExecute) return;
+                        loadingExecute = true;
 
                         $.ajax({
-                            url: '" . $block->escapeUrl($block->getUrl('*/*/cli')) . "',
-                            data : {command:'php ' + command,current_password:$('#user_current_password').val()},
+                            url: mfcliUrl,
+                            data: {command:'php ' + command,current_password:$('#user_current_password').val(),form_key:mfcliFormKey},
                             type: 'POST',
                             dataType: 'json',
                             showLoader: true
                         }).done(function (data) {
-                            loading = false;
+                            loadingExecute = false;
                             if (data && data.message) {
                                 addContent('<strong>$ </strong>' + command + '<br/>');
                                 addContent(data.message);
                             } else {
-                                alert('" . $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) . "');
+                                alert(mfcliErrorMsg);
                             }
-
                             if (data && data.newFormKey) {
-                                FORM_KEY = data.newFormKey;
-                                document.querySelector('input[name=\"form_key\"]').value = FORM_KEY;
+                                mfcliFormKey = data.newFormKey;
+                                var formKeyInput = document.querySelector('input[name=\"form_key\"]');
+                                if (formKeyInput) formKeyInput.value = data.newFormKey;
                             }
+                        }).fail(function() {
+                            loadingExecute = false;
+                            alert(mfcliErrorMsg);
                         });
                     }
                 },
@@ -243,10 +249,12 @@ $script = '';
                     }
                 }]
             });
-        })
+			});
+		});
 	});
-    "; ?>
+    ";
+        ?>
 
-        <?= /* @noEscape */ $mfSecureRenderer->renderTag('script', [], $script, false) ?>
+        <?= /* @noEscape */ $block->renderScript($script) ?>
     <?php } ?>
 <?php } ?>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!-- Declared table for CLI logs -->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="magefan_cli_log" resource="default" engine="innodb" comment="Magefan CLI execution log">
+        <column xsi:type="int" name="log_id" nullable="false" identity="true" unsigned="true" comment="Log ID" />
+        <column xsi:type="text" name="command" nullable="false" comment="Executed command" />
+        <column xsi:type="text" name="result" nullable="true" comment="Command result output" />
+        <column xsi:type="int" name="user_id" nullable="true" unsigned="true" comment="User ID who executed" />
+        <column xsi:type="timestamp" name="executed_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="false" comment="Execution time" />
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="log_id" />
+        </constraint>
+        <index referenceId="MAGEFAN_CLI_LOG_USER_ID" indexType="btree">
+            <column name="user_id" />
+        </index>
+        <index referenceId="MAGEFAN_CLI_LOG_EXECUTED_AT" indexType="btree">
+            <column name="executed_at" />
+        </index>
+    </table>
+</schema>

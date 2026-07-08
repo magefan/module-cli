@@ -8,6 +8,7 @@ namespace Magefan\Cli\Controller\Adminhtml\Index;
 
 use Magefan\Cli\Model\Config;
 use Magento\Framework\Data\Form\FormKey;
+use Magento\Framework\App\ResourceConnection;
 
 class Cli extends \Magento\Backend\App\Action
 {
@@ -46,6 +47,11 @@ class Cli extends \Magento\Backend\App\Action
     private $formKey;
 
     /**
+     * @var ResourceConnection
+     */
+    private $resource;
+
+    /**
      * Constructor
      *
      * @param \Magento\Backend\App\Action\Context $context
@@ -70,6 +76,7 @@ class Cli extends \Magento\Backend\App\Action
         $this->authSession = $authSession;
         $this->config = $config;
         $this->formKey = $formKey;
+        $this->resource = $context->getObjectManager()->get(ResourceConnection::class);
         parent::__construct($context);
     }
 
@@ -132,6 +139,25 @@ class Cli extends \Magento\Backend\App\Action
             if (!$message) {
                 $message = __('Command not found or error occurred.') . PHP_EOL;
             }
+            // persist log to DB
+            try {
+                $connection = $this->resource->getConnection();
+                $tableName = $this->resource->getTableName('magefan_cli_log');
+                $userId = null;
+                try {
+                    $user = $this->authSession->getUser();
+                    $userId = $user ? (int)$user->getId() : null;
+                } catch (\Exception $e) {
+                    $userId = null;
+                }
+
+                $connection->insertMultiple($tableName, [
+                    ['command' => $command, 'result' => $message, 'user_id' => $userId, 'executed_at' => (new \DateTime())->format('Y-m-d H:i:s')]
+                ]);
+            } catch (\Exception $e) {
+                // swallow DB errors to not break execution
+            }
+
             unlink($logFile);
         } catch (\Exception $e) {
             $message = $e->getMessage() . PHP_EOL;

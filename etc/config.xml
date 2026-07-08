@@ -12,9 +12,10 @@
                 <enabled>0</enabled>
                 <mfmodule>Cli</mfmodule>
                 <mftype>1</mftype>
-                <php/>
+                <php>php8.2</php>
                 <commands>cache:flush,indexer:reindex</commands>
                 <non_admin_commands>cache:flush,indexer:reindex</non_admin_commands>
+                <log_lifetime>30</log_lifetime>
             </general>
         </mfcli>
     </default>

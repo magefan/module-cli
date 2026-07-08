@@ -7,8 +7,8 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
 	<module name="Magefan_Cli">
-        <sequence>
-            <module name="Magefan_Community" />
-        </sequence>
-    </module>
+		<sequence>
+			<module name="Magento_Backend"/>
+		</sequence>
+	</module>
 </config>

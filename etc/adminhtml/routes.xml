@@ -1,14 +1,8 @@
-<?xml version="1.0" ?>
-<!--
-/**
- * Copyright © Magefan (support@magefan.com). All rights reserved.
- * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
- */
- -->
+<?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
-	<router id="admin">
-		<route frontName="mfcli" id="mfcli">
-			<module before="Magento_Backend" name="Magefan_Cli"/>
-		</route>
-	</router>
+    <router id="admin">
+        <route id="mfcli" frontName="mfcli">
+            <module name="Magefan_Cli" before="Magento_Backend"/>
+        </route>
+    </router>
 </config>

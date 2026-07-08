@@ -8,24 +8,21 @@ declare(strict_types=1);
 
 namespace Magefan\Cli\Block\Adminhtml\System\Config\Form;
 
-class Info extends \Magefan\Community\Block\Adminhtml\System\Config\Form\Info
+use Magento\Config\Block\System\Config\Form\Field;
+use Magento\Framework\Data\Form\Element\AbstractElement;
+
+class Info extends Field
 {
     /**
-     * Return extension url
+     * @param AbstractElement $element
      * @return string
      */
-    protected function getModuleUrl():string
+    protected function _getElementHtml(AbstractElement $element)
     {
-        return 'https://mage' .
-            'fan.com/magento2-extensions?utm_source=m2admin_cli_config&utm_medium=link&utm_campaign=regular';
-    }
-
-    /**
-     * Return extension title
-     * @return string
-     */
-    protected function getModuleTitle():string
-    {
-        return 'Command Line Interface';
+        return '<div style="padding: 10px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 3px;">' .
+            '<strong>Magefan Command Line Interface</strong><br/>' .
+            'Version: 1.0.0<br/>' .
+            '<a href="https://magefan.com/magento2-extensions" target="_blank">Visit Magefan.com →</a>' .
+            '</div>';
     }
 }
