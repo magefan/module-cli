@@ -4,6 +4,8 @@
  * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
  */
 
+declare(strict_types=1); 
+
 namespace Magefan\Cli\Block\Adminhtml;
 
 use Magento\Framework\View\Element\Template;

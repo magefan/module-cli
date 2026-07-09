@@ -1,4 +1,11 @@
 <?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ */
+
+declare(strict_types=1); 
+
 namespace Magefan\Cli\Cron;
 
 use Magento\Framework\App\ResourceConnection;
@@ -10,16 +17,24 @@ class Cleanup
 {
     const XML_PATH_LOG_LIFETIME = 'mfcli/general/log_lifetime';
 
-    /** @var ResourceConnection */
+    /** 
+     * @var ResourceConnection 
+     */
     private $resource;
 
-    /** @var DateTime */
+    /** 
+     * @var DateTime 
+     */
     private $dateTime;
 
-    /** @var ScopeConfigInterface */
+    /** 
+     * @var ScopeConfigInterface 
+     */
     private $scopeConfig;
 
-    /** @var LoggerInterface */
+    /** 
+     * @var LoggerInterface 
+     */
     private $logger;
 
     public function __construct(

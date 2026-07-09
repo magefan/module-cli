@@ -1,5 +1,10 @@
 <?xml version="1.0"?>
-<!-- Declared table for CLI logs -->
+<!--
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ */
+ -->
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
     <table name="magefan_cli_log" resource="default" engine="innodb" comment="Magefan CLI execution log">
         <column xsi:type="int" name="log_id" nullable="false" identity="true" unsigned="true" comment="Log ID" />

@@ -1,9 +1,15 @@
 <?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
+ */
+?>
+
+<?php
 /** @var $block \Magefan\Cli\Block\Adminhtml\History */
 $logs = $block->getLogs(200);
 ?>
 <div class="admin__page-section">
-    <h1><?= $block->escapeHtml(__('Command Line History')) ?></h1>
     <table class="data-grid">
         <thead>
             <tr>

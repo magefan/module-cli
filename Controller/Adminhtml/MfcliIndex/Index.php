@@ -1,8 +1,11 @@
 <?php
 /**
  * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
  * Command Line page via default admin route (admin/admin/mfcli_index/index).
  */
+
+declare(strict_types=1); 
 
 namespace Magefan\Cli\Controller\Adminhtml\MfcliIndex;
 
