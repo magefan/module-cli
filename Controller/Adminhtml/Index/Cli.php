@@ -7,9 +7,10 @@
 namespace Magefan\Cli\Controller\Adminhtml\Index;
 
 use Magefan\Cli\Model\Config;
+use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Data\Form\FormKey;
 
-class Cli extends \Magento\Backend\App\Action
+class Cli extends \Magento\Backend\App\Action implements HttpPostActionInterface
 {
     const ADMIN_RESOURCE = 'Magefan_Cli::elements';
 
@@ -95,18 +96,8 @@ class Cli extends \Magento\Backend\App\Action
             $phpCommand = $this->config->getPhpCommand();
 
             if (!$this->_authorization->isAllowed('Magefan_Cli::admin')) {
-                $needle = 'bin/magento ';
-                $position = stripos($command, $needle);
-                $needleLen = strlen($needle);
-                $commandStart = $position + $needleLen;
-                $magentoCommand = substr($command, $commandStart);
-
-                if ($position === false || !in_array($magentoCommand, $this->config->getNonAdminCommands())) {
-                    throw new \Exception(__('You don\'t have permission to execute this command.'), 1);
-                }
-            }
-
-            if ($phpCommand) {
+                $command = $this->getNonAdminCommand((string)$command, $phpCommand);
+            } elseif ($phpCommand) {
                 if (stripos($command, 'php ') === 0) {
                     $command = str_replace('php ', $phpCommand . ' ', $command);
                 } elseif (stripos($command, 'bin/magento') === 0) {
@@ -145,6 +136,37 @@ class Cli extends \Magento\Backend\App\Action
         return $this->getResponse()->representJson(
             $this->jsonHelper->jsonEncode($response)
         );
+    }
+
+    /**
+     * Build shell command for users without Magefan_Cli::admin permission
+     *
+     * The request string is never passed to the shell: it is only matched against
+     * the allowed commands, and the command is built from the allowed entry.
+     *
+     * @param string $command
+     * @param string $phpCommand
+     * @return string
+     * @throws \Exception
+     */
+    protected function getNonAdminCommand(string $command, string $phpCommand): string
+    {
+        $noPermission = __('You don\'t have permission to execute this command.');
+
+        if (!preg_match('#^\s*(?:php\s+)?(?:\./)?bin/magento\s+(\S.*?)\s*\z#i', $command, $matches)) {
+            throw new \Exception($noPermission, 1);
+        }
+
+        $magentoCommand = preg_replace('/\s+/', ' ', $matches[1]);
+        $allowedCommands = array_filter(array_map('trim', $this->config->getNonAdminCommands() ?: []));
+
+        if (!in_array($magentoCommand, $allowedCommands, true)) {
+            throw new \Exception($noPermission, 1);
+        }
+
+        $args = array_map('escapeshellarg', explode(' ', $magentoCommand));
+
+        return ($phpCommand ?: 'php') . ' bin/magento ' . implode(' ', $args);
     }
 
     /**

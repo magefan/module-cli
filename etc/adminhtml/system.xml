@@ -28,6 +28,7 @@
                 <field id="php" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
                     <label>PHP Command</label>
                     <comment>If you use some custom PHP binary you can enter PHP command here. E.g. /usr/bin/php7.2 -dmemory_limit=-1.</comment>
+                    <backend_model>Magefan\Cli\Model\Config\Backend\PhpCommand</backend_model>
                 </field>
                 <field id="commands" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
                     <label>Most Used Magento 2 Commands</label>
