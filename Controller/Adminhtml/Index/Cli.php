@@ -7,6 +7,8 @@
 namespace Magefan\Cli\Controller\Adminhtml\Index;
 
 use Magefan\Cli\Model\Config;
+use Magefan\Cli\Model\MagentoCommand;
+use Magefan\Cli\Model\PhpCommand;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Data\Form\FormKey;
 
@@ -47,6 +49,16 @@ class Cli extends \Magento\Backend\App\Action implements HttpPostActionInterface
     private $formKey;
 
     /**
+     * @var MagentoCommand
+     */
+    private $magentoCommand;
+
+    /**
+     * @var PhpCommand
+     */
+    private $phpCommand;
+
+    /**
      * Constructor
      *
      * @param \Magento\Backend\App\Action\Context $context
@@ -55,6 +67,9 @@ class Cli extends \Magento\Backend\App\Action implements HttpPostActionInterface
      * @param \Magento\Framework\Filesystem\DirectoryList $dir
      * @param \Magento\Backend\Model\Auth\Session $authSession
      * @param Config $config
+     * @param FormKey $formKey
+     * @param MagentoCommand $magentoCommand
+     * @param PhpCommand $phpCommand
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
@@ -63,7 +78,9 @@ class Cli extends \Magento\Backend\App\Action implements HttpPostActionInterface
         \Magento\Framework\Filesystem\DirectoryList $dir,
         \Magento\Backend\Model\Auth\Session $authSession,
         Config $config,
-        FormKey $formKey
+        FormKey $formKey,
+        MagentoCommand $magentoCommand,
+        PhpCommand $phpCommand
     ) {
         $this->resultPageFactory = $resultPageFactory;
         $this->jsonHelper = $jsonHelper;
@@ -71,6 +88,8 @@ class Cli extends \Magento\Backend\App\Action implements HttpPostActionInterface
         $this->authSession = $authSession;
         $this->config = $config;
         $this->formKey = $formKey;
+        $this->magentoCommand = $magentoCommand;
+        $this->phpCommand = $phpCommand;
         parent::__construct($context);
     }
 
@@ -92,32 +111,12 @@ class Cli extends \Magento\Backend\App\Action implements HttpPostActionInterface
 
             $this->validateUser();
 
-            $command = $this->getRequest()->getParam('command');
-            $phpCommand = $this->config->getPhpCommand();
-
-            if (!$this->_authorization->isAllowed('Magefan_Cli::admin')) {
-                $command = $this->getNonAdminCommand((string)$command, $phpCommand);
-            } elseif ($phpCommand) {
-                if (stripos($command, 'php ') === 0) {
-                    $command = str_replace('php ', $phpCommand . ' ', $command);
-                } elseif (stripos($command, 'bin/magento') === 0) {
-                    $command = $phpCommand . ' ' . $command;
-                }
-            }
-
-            $blackCommands = ['admin:user'];
-            foreach ($blackCommands as $bc) {
-                if (strpos($command, $bc) !== false) {
-                    throw new \Exception(__('Error: Cannot run this command due to security reasons.'), 1);
-                }
-            }
-
-            if (strpos($command, 'cd') === 0) {
-                throw new \Exception(__('cd command is not supported.'), 1);
-            }
+            $command = $this->getShellCommand((string)$this->getRequest()->getParam('command'));
 
             $logFile = $this->dir->getPath('var') . '/mfcli.txt';
-            exec($c = 'cd ' . $this->dir->getRoot() . ' && ' . $command . ' > ' . $logFile . ' 2>&1', $a, $b);
+            exec(
+                'cd ' . escapeshellarg($this->dir->getRoot()) . ' && ' . $command . ' > ' . escapeshellarg($logFile) . ' 2>&1'
+            );
 
             $message = file_get_contents($logFile);
             if (!$message) {
@@ -139,34 +138,35 @@ class Cli extends \Magento\Backend\App\Action implements HttpPostActionInterface
     }
 
     /**
-     * Build shell command for users without Magefan_Cli::admin permission
+     * Build shell command from the entered text
      *
-     * The request string is never passed to the shell: it is only matched against
-     * the allowed commands, and the command is built from the allowed entry.
+     * Only Magento commands can be executed. The entered text is never passed to the shell:
+     * the Magento command is taken from it (see MagentoCommand::getWords), every word is escaped
+     * and the command is built as "<php binary> <php options> bin/magento <words>".
      *
-     * @param string $command
-     * @param string $phpCommand
+     * @param string $input
      * @return string
      * @throws \Exception
      */
-    protected function getNonAdminCommand(string $command, string $phpCommand): string
+    protected function getShellCommand(string $input): string
     {
-        $noPermission = __('You don\'t have permission to execute this command.');
-
-        if (!preg_match('#^\s*(?:php\s+)?(?:\./)?bin/magento\s+(\S.*?)\s*\z#i', $command, $matches)) {
-            throw new \Exception($noPermission, 1);
+        $words = $this->magentoCommand->getWords($input);
+        if (!$words) {
+            throw new \Exception(__('Only Magento commands can be executed, e.g. bin/magento cache:flush'), 1);
         }
 
-        $magentoCommand = preg_replace('/\s+/', ' ', $matches[1]);
-        $allowedCommands = array_filter(array_map('trim', $this->config->getNonAdminCommands() ?: []));
-
-        if (!in_array($magentoCommand, $allowedCommands, true)) {
-            throw new \Exception($noPermission, 1);
+        if (!$this->_authorization->isAllowed('Magefan_Cli::admin')) {
+            $allowedCommands = array_filter(array_map('trim', $this->config->getNonAdminCommands() ?: []));
+            if (!in_array($this->magentoCommand->toString($words), $allowedCommands, true)) {
+                throw new \Exception(__('You don\'t have permission to execute this command.'), 1);
+            }
         }
 
-        $args = array_map('escapeshellarg', explode(' ', $magentoCommand));
+        if ($this->magentoCommand->isBlocked($words)) {
+            throw new \Exception(__('Error: Cannot run this command due to security reasons.'), 1);
+        }
 
-        return ($phpCommand ?: 'php') . ' bin/magento ' . implode(' ', $args);
+        return $this->phpCommand->getCommand() . ' bin/magento ' . $this->magentoCommand->toShellArgs($words);
     }
 
     /**
