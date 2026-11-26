@@ -8,8 +8,9 @@ namespace Magefan\Cli\Controller\Adminhtml\Index;
 
 use Magefan\Cli\Model\Config;
 use Magefan\Cli\Model\PhpCommand;
+use Magento\Framework\App\Action\HttpGetActionInterface;
 
-class Index extends \Magento\Backend\App\Action
+class Index extends \Magento\Backend\App\Action implements HttpGetActionInterface
 {
     const ADMIN_RESOURCE = 'Magefan_Cli::elements';
 

@@ -49,7 +49,7 @@ class MagentoCommand
 
         $command = substr($input, $position + strlen(self::NEEDLE));
         if ($command !== '' && !preg_match('/^\s/', $command)) {
-            /* e.g. "bin/magentoX" */
+            /* e.g. "bin/magentoX" / > / e.g. "bin/magentoX" and not started with space */
             return [];
         }
 
