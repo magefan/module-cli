@@ -48,8 +48,9 @@ $script = '';
         #command-list ul{overflow:hidden;overflow-y:scroll;overflow-x:scroll;}
         #command-list li {padding-bottom: 10px}
         #command-list li .execute {padding-left: 10px}
+
         .row:after {content:'';display:table;clear:both;}
-        .execute {cursor: pointer;}
+        .execute, .execute-label {cursor: pointer;}
     </style>
 
     <div class="admin__scope-old">
@@ -136,15 +137,15 @@ $script = '';
 		}
 
 		function addCommand()
-		{
-			var el = $('#command');
-			v = $.trim(el.val());
-			if (v) {
-				commandLog.push(v);
-			}
-			var commandLogIndex = 0;
-			el.val('');
-		}
+        {
+            var el = $('#command');
+            var v = $.trim(el.val());
+            if (v) {
+                commandLog.push(v);
+            }
+            commandLogIndex = 0;
+            el.val('');
+        }
 
 		function addContent(c)
 		{
@@ -154,23 +155,26 @@ $script = '';
 		}
 
 		var loading = false;
-		$('#command').keydown(function(event) {
-			var el = $(this);
-			if(event.which == 40) { //up
-				commandLogIndex--;
-				if (commandLogIndex < 0) {
-					commandLogIndex = 0;
-				}
-				showCommand();
-			} else if(event.which == 38) { //down
-				showCommand();
-				commandLogIndex++;
-				if (commandLogIndex >= commandLog.length) {
-					commandLogIndex = commandLog.length-1;
-				}
-			} else if(event.which == 13) { //enter
-		    	if (loading) return;
-		    	loading = true;
+        $('#command').keydown(function(event) {
+            var el = $(this);
+            if(event.which == 40) { //up
+                event.preventDefault();
+                commandLogIndex--;
+                if (commandLogIndex < 0) {
+                    commandLogIndex = 0;
+                }
+                showCommand();
+            } else if(event.which == 38) { //down
+                event.preventDefault();
+                showCommand();
+                commandLogIndex++;
+                if (commandLogIndex >= commandLog.length) {
+                    commandLogIndex = commandLog.length-1;
+                }
+            } else if(event.which == 13) { //enter
+                event.preventDefault();
+                if (loading) return;
+                loading = true;
 
 		    	if (!$.trim(el.val())) {
 		    		addContent('<br/>');
@@ -179,42 +183,53 @@ $script = '';
 		    	}
 
 		        $.ajax({
-				    url: '" . $block->escapeUrl($block->getUrl('*/*/cli')) . "',
-				    data : {command:el.val(),current_password:$('#user_current_password').val()},
-				    type: 'POST',
-				    dataType: 'json',
-				    showLoader: true
-				}).done(function (data) {
-					loading = false;
-				    if (data && data.message) {
-				    	addContent('<strong>$ </strong>' + el.val() + '<br/>');
-				    	addContent(data.message);
-				    } else {
-				    	alert('" . $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) . "');
-				    }
-				});
+                    url: '" . $block->escapeUrl($block->getUrl('*/*/cli')) . "',
+                    data : {command:el.val(),current_password:$('#user_current_password').val(),form_key:$('input[name=\"form_key\"]').val()},
+                    type: 'POST',
+                    dataType: 'json',
+                    showLoader: true
+                }).done(function (data) {
+                    loading = false;
+                    if (data && data.message) {
+                        addContent('<strong>$ </strong>' + el.val() + '<br/>');
+                        addContent(data.message);
+                    } else {
+                        alert('" . $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) . "');
+                    }
+                    if (data && data.newFormKey) {
+                        $('input[name=\"form_key\"]').val(data.newFormKey);
+                    }
+                });
 		    }
 		});
 
-		$('.execute').click(function() {
-		    var command = 'bin/magento ' + $(this).attr('data-name');
-            var loading = false;
+        $('.execute-label').click(function() {
+            var command = 'bin/magento ' + $(this).closest('li').find('.execute').attr('data-name');
+            $('#command').val(command).focus();
+        });
+
+        $('.execute').click(function() {
+            var command = 'bin/magento ' + $(this).closest('li').find('.execute').attr('data-name');
+            $('#command').val(command).focus();
+
             confirmation({
-                title: $.mage.__('Execute Command:') + ' ' + command,
+                title: $.mage.__('Execute Command:') + '<br>' + command,
                 content: $.mage.__('Are you sure you want to do this?'),
                 actions: {
-                    confirm: function(){
-                        if (loading) return;
-                        loading = true;
+                    confirm: function() {
 
                         $.ajax({
                             url: '" . $block->escapeUrl($block->getUrl('*/*/cli')) . "',
-                            data : {command:'php ' + command,current_password:$('#user_current_password').val()},
+                            data: {
+                                command: 'php ' + command,
+                                current_password: $('#user_current_password').val(),
+                                form_key: $('input[name=\"form_key\"]').val()
+                            },
                             type: 'POST',
                             dataType: 'json',
                             showLoader: true
                         }).done(function (data) {
-                            loading = false;
+
                             if (data && data.message) {
                                 addContent('<strong>$ </strong>' + command + '<br/>');
                                 addContent(data.message);
@@ -224,26 +239,14 @@ $script = '';
 
                             if (data && data.newFormKey) {
                                 FORM_KEY = data.newFormKey;
-                                document.querySelector('input[name=\"form_key\"]').value = FORM_KEY;
+                                $('input[name=\"form_key\"]').val(FORM_KEY);
                             }
                         });
-                    }
-                },
-                buttons: [{
-                    text: $.mage.__('Cancel'),
-                    class: 'action-secondary dismiss',
-                    click: function (event) {
-                        this.closeModal(event);
-                    }
-                }, {
-                    text: $.mage.__('OK'),
-                    class: 'action primary accept',
-                    click: function (event) {
-                        this.closeModal(event, true);
-                    }
-                }]
+                    },
+                    cancel: function() {}
+                }
             });
-        })
+        });
 	});
     "; ?>
 
