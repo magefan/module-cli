@@ -13,6 +13,7 @@ use Magefan\Cli\Model\MagentoCommand;
 use Magefan\Cli\Model\PhpCommand;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Data\Form\FormKey;
+use Magento\Framework\Escaper;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Shell;
 
@@ -68,6 +69,11 @@ class Cli extends \Magento\Backend\App\Action implements HttpPostActionInterface
     private $shell;
 
     /**
+     * @var Escaper
+     */
+    private $escaper;
+
+    /**
      * Constructor
      *
      * @param \Magento\Backend\App\Action\Context $context
@@ -80,6 +86,7 @@ class Cli extends \Magento\Backend\App\Action implements HttpPostActionInterface
      * @param MagentoCommand $magentoCommand
      * @param PhpCommand $phpCommand
      * @param Shell $shell
+     * @param Escaper $escaper
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
@@ -91,7 +98,8 @@ class Cli extends \Magento\Backend\App\Action implements HttpPostActionInterface
         FormKey $formKey,
         MagentoCommand $magentoCommand,
         PhpCommand $phpCommand,
-        Shell $shell
+        Shell $shell,
+        Escaper $escaper
     ) {
         $this->resultPageFactory = $resultPageFactory;
         $this->jsonHelper = $jsonHelper;
@@ -102,6 +110,7 @@ class Cli extends \Magento\Backend\App\Action implements HttpPostActionInterface
         $this->magentoCommand = $magentoCommand;
         $this->phpCommand = $phpCommand;
         $this->shell = $shell;
+        $this->escaper = $escaper;
         parent::__construct($context);
     }
 
@@ -123,16 +132,18 @@ class Cli extends \Magento\Backend\App\Action implements HttpPostActionInterface
             $this->validateUser();
 
             $words = $this->getCommandWords((string)$this->getRequest()->getParam('command'));
+            $executed = __('Executing: %1', $this->magentoCommand->toDisplayString($words)) . PHP_EOL;
             $message = $this->runCommand($words);
             if ($message === '') {
                 $message = __('Command not found or error occurred.') . PHP_EOL;
             }
+            $message = $executed . $message;
         } catch (\Exception $e) {
             $message = $e->getMessage() . PHP_EOL;
         }
 
         $response = [
-            'message' => nl2br($message),
+            'message' => nl2br($this->escaper->escapeHtml((string)$message)),
             'newFormKey' => $this->formKey->getFormKey()
         ];
 

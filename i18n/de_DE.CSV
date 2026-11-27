@@ -25,3 +25,4 @@
 "Allowed Commands For Managers","Erlaubte Befehle für Manager"
 "Admin users with no ""Command Line Admin"" access will be able to run only these commands.","Administratoren mit eingeschränktem Zugriff auf das Command Line Interface können nur diese Befehle ausführen."
 "Magefan Command Line Interface is disabled, to enable the extension please navigate to ","Magefan Command Line Interface ist deaktiviert, um die Erweiterung zu aktivieren, öffnen Sie bitte "
+"Executing: %1","Ausführung: %1"

@@ -127,4 +127,24 @@ class MagentoCommand
     {
         return implode(' ', $words);
     }
+
+    /**
+     * Get the command that is really executed, to show it to the user, e.g. bin/magento cache:flush
+     *
+     * Empty words and words with spaces or quotes are shown in single quotes, as they are passed to bin/magento.
+     *
+     * @param string[] $words
+     * @return string
+     */
+    public function toDisplayString(array $words): string
+    {
+        $parts = [self::NEEDLE];
+        foreach ($words as $word) {
+            $parts[] = ($word === '' || preg_match('/[\s"\'\\\\]/', $word))
+                ? "'" . str_replace("'", "'\\''", $word) . "'"
+                : $word;
+        }
+
+        return implode(' ', $parts);
+    }
 }

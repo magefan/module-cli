@@ -25,3 +25,4 @@
 "Allowed Commands For Managers","Дозволені команди для менеджерів"
 "Admin users with no ""Command Line Admin"" access will be able to run only these commands.","Користувачі з правами адміністратора, що не мають доступу ""Адміністратор командного рядка"", зможуть виконувати лише ці команди."
 "Magefan Command Line Interface is disabled, to enable the extension please navigate to ","Інтерфейс командного рядка від Magefan вимкнений, щоб увімкнути розширення, перейдіть до "
+"Executing: %1","Виконується: %1"
