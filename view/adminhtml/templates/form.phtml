@@ -162,6 +162,72 @@ $script = '';
 			$('#shell-area').scrollTop($('#shell-area')[0].scrollHeight);
 		}
 
+		function escapeHtml(text)
+		{
+			return $('<div>').text(String(text)).html();
+		}
+
+		function addError(message)
+		{
+			addContent('<span style=\"color:#e22626\">' + escapeHtml(message) + '</span><br/>');
+		}
+
+		function getErrorMessage(xhr, textStatus, errorThrown)
+		{
+			if (xhr.status === 401) {
+				return '" . $escaper->escapeJs(__('Invalid security or form key. Please refresh the page.')) . "';
+			}
+			if (textStatus === 'timeout') {
+				return '" . $escaper->escapeJs(__('The request timed out. The command may still be running on the server, check var/log for details.')) . "';
+			}
+			if (textStatus === 'parsererror') {
+				return '" . $escaper->escapeJs(__('Server returned an invalid response. Please check var/log/exception.log and var/log/system.log.')) . "'
+					+ ' (HTTP ' + xhr.status + ')';
+			}
+			if (!xhr.status) {
+				return '" . $escaper->escapeJs(__('Could not connect to the server. Please check your connection and try again.')) . "';
+			}
+
+			return '" . $escaper->escapeJs(__('Request failed:')) . "'
+				+ ' HTTP ' + xhr.status + ' ' + (errorThrown || xhr.statusText || '')
+				+ '. " . $escaper->escapeJs(__('Please check var/log/exception.log and var/log/system.log.')) . "';
+		}
+
+		/**
+		 * Send command to the server and show the result or the error in the terminal
+		 */
+		function sendCommand(command, displayCommand)
+		{
+			return $.ajax({
+				url: '" . $escaper->escapeUrl($block->getUrl('*/*/cli')) . "',
+				data: {
+					command: command,
+					current_password: $('#user_current_password').val(),
+					form_key: $('input[name=\"form_key\"]').val()
+				},
+				type: 'POST',
+				dataType: 'json',
+				showLoader: true
+			}).done(function (data) {
+				if (data && data.newFormKey) {
+					FORM_KEY = data.newFormKey;
+					$('input[name=\"form_key\"]').val(data.newFormKey);
+				}
+				addContent('<strong>$ </strong>' + escapeHtml(displayCommand) + '<br/>');
+				if (data && data.message) {
+					addContent(data.message);
+				} else {
+					addError('" . $escaper->escapeJs(__('Unexpected error. Please refresh the page or try later.')) . "');
+				}
+			}).fail(function (xhr, textStatus, errorThrown) {
+				if (textStatus === 'abort') {
+					return;
+				}
+				addContent('<strong>$ </strong>' + escapeHtml(displayCommand) + '<br/>');
+				addError(getErrorMessage(xhr, textStatus, errorThrown));
+			});
+		}
+
 		var loading = false;
         $('#command').keydown(function(event) {
             var el = $(this);
@@ -182,31 +248,15 @@ $script = '';
             } else if(event.which == 13) { //enter
                 event.preventDefault();
                 if (loading) return;
-                loading = true;
 
 		    	if (!$.trim(el.val())) {
 		    		addContent('<br/>');
-		    		loading = false;
 		    		return;
 		    	}
 
-		        $.ajax({
-                    url: '" . $escaper->escapeUrl($block->getUrl('*/*/cli')) . "',
-                    data : {command:el.val(),current_password:$('#user_current_password').val(),form_key:$('input[name=\"form_key\"]').val()},
-                    type: 'POST',
-                    dataType: 'json',
-                    showLoader: true
-                }).done(function (data) {
+                loading = true;
+                sendCommand(el.val(), el.val()).always(function () {
                     loading = false;
-                    if (data && data.message) {
-                        addContent('<strong>$ </strong>' + el.val() + '<br/>');
-                        addContent(data.message);
-                    } else {
-                        alert('" . $escaper->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) . "');
-                    }
-                    if (data && data.newFormKey) {
-                        $('input[name=\"form_key\"]').val(data.newFormKey);
-                    }
                 });
 		    }
 		});
@@ -221,34 +271,14 @@ $script = '';
             $('#command').val(command).focus();
 
             confirmation({
-                title: $.mage.__('Execute Command:') + '<br>' + command,
+                title: $.mage.__('Execute Command:') + '<br>' + escapeHtml(command),
                 content: $.mage.__('Are you sure you want to do this?'),
                 actions: {
                     confirm: function() {
-
-                        $.ajax({
-                            url: '" . $escaper->escapeUrl($block->getUrl('*/*/cli')) . "',
-                            data: {
-                                command: 'php ' + command,
-                                current_password: $('#user_current_password').val(),
-                                form_key: $('input[name=\"form_key\"]').val()
-                            },
-                            type: 'POST',
-                            dataType: 'json',
-                            showLoader: true
-                        }).done(function (data) {
-
-                            if (data && data.message) {
-                                addContent('<strong>$ </strong>' + command + '<br/>');
-                                addContent(data.message);
-                            } else {
-                                alert('" . $escaper->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) . "');
-                            }
-
-                            if (data && data.newFormKey) {
-                                FORM_KEY = data.newFormKey;
-                                $('input[name=\"form_key\"]').val(FORM_KEY);
-                            }
+                        if (loading) return;
+                        loading = true;
+                        sendCommand('php ' + command, command).always(function () {
+                            loading = false;
                         });
                     },
                     cancel: function() {}
