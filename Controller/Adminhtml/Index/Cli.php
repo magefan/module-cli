@@ -131,7 +131,8 @@ class Cli extends \Magento\Backend\App\Action implements HttpPostActionInterface
 
             $this->validateUser();
 
-            $words = $this->getCommandWords((string)$this->getRequest()->getParam('command'));
+            $command = $this->getRequest()->getPost('command');
+            $words = $this->getCommandWords(is_string($command) ? $command : '');
             $executed = __('Executing: %1', $this->magentoCommand->toDisplayString($words)) . PHP_EOL;
             $message = $this->runCommand($words);
             if ($message === '') {
@@ -172,8 +173,12 @@ class Cli extends \Magento\Backend\App\Action implements HttpPostActionInterface
         }
 
         if (!$this->_authorization->isAllowed('Magefan_Cli::admin')) {
+            /* Users with no "Command Line Admin" access can run only an allowed command name, without arguments */
             $allowedCommands = array_filter(array_map('trim', $this->config->getNonAdminCommands() ?: []));
-            if (!in_array($this->magentoCommand->toString($words), $allowedCommands, true)) {
+            if (count($words) !== 1
+                || preg_match('/\s/', $words[0])
+                || !in_array($words[0], $allowedCommands, true)
+            ) {
                 throw new LocalizedException(__('You don\'t have permission to execute this command.'));
             }
         }
@@ -216,6 +221,8 @@ class Cli extends \Magento\Backend\App\Action implements HttpPostActionInterface
     /**
      * Validate current user password
      *
+     * The password is taken only from the POST body, so it never gets into URLs and web server logs.
+     *
      * @return $this
      * @throws \Magento\Framework\Exception\State\UserLockedException
      * @throws \Magento\Framework\Exception\AuthenticationException
@@ -223,10 +230,10 @@ class Cli extends \Magento\Backend\App\Action implements HttpPostActionInterface
      */
     protected function validateUser()
     {
-        $password = $this->getRequest()->getParam(
+        $password = $this->getRequest()->getPost(
             \Magento\User\Block\Role\Tab\Info::IDENTITY_VERIFICATION_PASSWORD_FIELD
         );
-        if (!$password) {
+        if (!is_string($password) || $password === '') {
             throw new LocalizedException(__('Please enter your password.'));
         }
         $user = $this->authSession->getUser();

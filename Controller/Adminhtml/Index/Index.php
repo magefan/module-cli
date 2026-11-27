@@ -62,8 +62,8 @@ class Index extends \Magento\Backend\App\Action implements HttpGetActionInterfac
             if (!$this->phpCommand->isConfiguredBinaryValid()) {
                 $this->messageManager->addWarningMessage(__(
                     'PHP Command "%1" in Stores > Configuration > Magefan Extensions > Command Line Interface'
-                        . ' is not valid, "%2" is used instead. Please enter only the path to PHP binary'
-                        . ' with "php" in the file name, e.g. /usr/bin/php8.4.',
+                        . ' is not valid, "%2" is used instead. Please enter only a full path to PHP binary,'
+                        . ' e.g. /usr/bin/php8.4, or its name, e.g. php8.4.',
                     $this->phpCommand->getConfiguredBinary(),
                     PhpCommand::DEFAULT_BINARY
                 ));

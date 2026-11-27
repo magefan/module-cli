@@ -19,9 +19,10 @@ class MagentoCommand
     public const NEEDLE = 'bin/magento';
 
     /**
-     * Characters that end a shell command or start a shell expression
+     * Characters that end a shell command or start a shell expression, and the NUL byte that can not be passed
+     * to a program as part of an argument
      */
-    private const TERMINATORS = ";&|$`<>()\r\n";
+    private const TERMINATORS = ";&|$`<>()\r\n\0";
 
     /**
      * Command namespaces nobody can run, e.g. admin:user:create, admin:user:unlock

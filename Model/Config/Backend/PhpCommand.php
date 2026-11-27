@@ -19,7 +19,7 @@ use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Registry;
 
 /**
- * Validate PHP Command before save: only a path to PHP binary is allowed, e.g. /usr/bin/php8.4
+ * Validate PHP Command before save: only a full path to PHP binary or its name is allowed, e.g. /usr/bin/php8.4
  */
 class PhpCommand extends Value
 {
@@ -63,10 +63,12 @@ class PhpCommand extends Value
         $value = trim((string)$this->getValue());
         if ($value !== '' && !$this->phpCommand->isValidBinary($value)) {
             throw new LocalizedException(__(
-                'PHP Command can contain only a path to PHP binary, and its file name must contain "php",'
-                    . ' e.g. %1. Options %2 are added automatically.',
+                'PHP Command can contain only a full path to PHP binary, e.g. %1, or its name, e.g. %3.'
+                    . ' The file name must be php with an optional version, e.g. php, php8.4, ea-php84.'
+                    . ' Options %2 are added automatically.',
                 '/usr/bin/php8.4',
-                implode(' ', PhpCommandModel::OPTIONS)
+                implode(' ', PhpCommandModel::OPTIONS),
+                'php8.4'
             ));
         }
         $this->setValue($value);
