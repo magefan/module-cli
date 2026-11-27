@@ -12,8 +12,11 @@ use Magento\Framework\App\Action\HttpGetActionInterface;
 
 class Index extends \Magento\Backend\App\Action implements HttpGetActionInterface
 {
-    const ADMIN_RESOURCE = 'Magefan_Cli::elements';
+    public const ADMIN_RESOURCE = 'Magefan_Cli::elements';
 
+    /**
+     * @var \Magento\Framework\View\Result\PageFactory
+     */
     protected $resultPageFactory;
 
     /**

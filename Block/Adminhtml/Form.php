@@ -4,6 +4,8 @@
  * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
  */
 
+declare(strict_types=1);
+
 namespace Magefan\Cli\Block\Adminhtml;
 
 use Magento\Framework\View\Element\Template;
@@ -29,7 +31,6 @@ class Form extends \Magento\Framework\View\Element\Template
     private $authorization;
 
     /**
-     * Form constructor.
      * @param Template\Context $context
      * @param CommandListInterface $commandList
      * @param Config $config
@@ -57,11 +58,12 @@ class Form extends \Magento\Framework\View\Element\Template
     protected function _prepareLayout()
     {
         $this->pageConfig->getTitle()->set(__('Command Line by Magefan'));
+        return parent::_prepareLayout();
     }
 
-
     /**
-     * Retrieve true if exec funtion is accesible
+     * Retrieve true if exec function is accessible
+     *
      * @return bool
      */
     public function execExist()
@@ -70,6 +72,8 @@ class Form extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Retrieve available commands split into most used and other
+     *
      * @return array
      */
     public function getMagentoCommands()
@@ -78,7 +82,7 @@ class Form extends \Magento\Framework\View\Element\Template
             'most_used' => [],
             'commands' => []
         ];
-        $mostUsedCommands = $this->config->getMostUsedCommands();
+        $mostUsedCommands = $this->config->getMostUsedCommands() ?: [];
         $commands = $this->commandList->getCommands();
 
         if (!$this->authorization->isAllowed('Magefan_Cli::admin')) {
@@ -86,7 +90,7 @@ class Form extends \Magento\Framework\View\Element\Template
         }
 
         foreach ($commands as $command) {
-            $command = gettype($command) == 'string' ? $command : $command->getName();
+            $command = is_string($command) ? $command : $command->getName();
             if (in_array($command, $mostUsedCommands)) {
                 $sortedCommands['most_used'][] = $command;
             } else {
@@ -98,6 +102,8 @@ class Form extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Retrieve true if module is enabled
+     *
      * @return bool
      */
     public function isModuleEnabled()

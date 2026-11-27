@@ -16,22 +16,22 @@ class Config
     /**
      * @var string
      */
-    const XML_PATH_EXTENSION_ENABLED = 'mfcli/general/enabled';
+    public const XML_PATH_EXTENSION_ENABLED = 'mfcli/general/enabled';
 
     /**
      * @var string
      */
-    const XML_PATH_PHP_COMMAND = 'mfcli/general/php';
+    public const XML_PATH_PHP_COMMAND = 'mfcli/general/php';
 
     /**
      * @var string
      */
-    const XML_PATH_MOST_USED_COMMANDS = 'mfcli/general/commands';
+    public const XML_PATH_MOST_USED_COMMANDS = 'mfcli/general/commands';
 
     /**
      * @var string
      */
-    const XML_PATH_NON_ADMIN_COMMANDS = 'mfcli/general/non_admin_commands';
+    public const XML_PATH_NON_ADMIN_COMMANDS = 'mfcli/general/non_admin_commands';
 
     /**
      * @var ScopeConfigInterface
@@ -39,7 +39,6 @@ class Config
     private $scopeConfig;
 
     /**
-     * Config constructor.
      * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
@@ -51,7 +50,7 @@ class Config
     /**
      * Retrieve true if module is enabled
      *
-     * @param null $storeId
+     * @param int|string|null $storeId
      * @return bool
      */
     public function isEnabled($storeId = null): bool
@@ -65,7 +64,7 @@ class Config
     /**
      * Retrieve PHP command
      *
-     * @param null $storeId
+     * @param int|string|null $storeId
      * @return string
      */
     public function getPhpCommand($storeId = null): string
@@ -77,7 +76,9 @@ class Config
     }
 
     /**
-     * @param null $storeId
+     * Retrieve most used commands
+     *
+     * @param int|string|null $storeId
      * @return array|null
      */
     public function getMostUsedCommands($storeId = null): ?array
@@ -87,15 +88,13 @@ class Config
             $storeId
         );
 
-        if ($commands) {
-            $commands = explode(',', $commands);
-        }
-
-        return $commands;
+        return $commands ? explode(',', (string)$commands) : null;
     }
 
     /**
-     * @param null $storeId
+     * Retrieve commands allowed for non-admin users
+     *
+     * @param int|string|null $storeId
      * @return array|null
      */
     public function getNonAdminCommands($storeId = null): ?array
@@ -105,18 +104,14 @@ class Config
             $storeId
         );
 
-        if ($commands) {
-            $commands = explode(',', $commands);
-        }
-
-        return $commands;
+        return $commands ? explode(',', (string)$commands) : null;
     }
 
     /**
      * Retrieve store config value
      *
      * @param string $path
-     * @param null $storeId
+     * @param int|string|null $storeId
      * @return mixed
      */
     public function getConfig(string $path, $storeId = null)

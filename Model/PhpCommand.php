@@ -60,7 +60,7 @@ class PhpCommand
         return (bool)preg_match(self::BINARY_PATTERN, $binary)
             && $binary[0] !== '-'
             && substr($binary, -1) !== '/'
-            && false !== stripos(basename($binary), 'php');
+            && false !== stripos((string)substr((string)strrchr('/' . $binary, '/'), 1), 'php');
     }
 
     /**
@@ -99,12 +99,14 @@ class PhpCommand
     }
 
     /**
-     * Get PHP binary with options, e.g. /usr/bin/php8.4 -dmemory_limit=-1 -ddisplay_errors=1
+     * Get PHP binary with options to display, e.g. /usr/bin/php8.4 -dmemory_limit=-1 -ddisplay_errors=1
+     *
+     * The value is not escaped for the shell, pass getBinary() and OPTIONS to \Magento\Framework\Shell instead.
      *
      * @return string
      */
     public function getCommand(): string
     {
-        return escapeshellarg($this->getBinary()) . ' ' . implode(' ', self::OPTIONS);
+        return $this->getBinary() . ' ' . implode(' ', self::OPTIONS);
     }
 }

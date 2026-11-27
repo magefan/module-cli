@@ -28,6 +28,9 @@ class Commands implements OptionSourceInterface
      */
     private $commandList;
 
+    /**
+     * @param CommandListInterface $commandList
+     */
     public function __construct(
         CommandListInterface $commandList
     ) {

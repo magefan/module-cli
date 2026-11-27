@@ -127,15 +127,4 @@ class MagentoCommand
     {
         return implode(' ', $words);
     }
-
-    /**
-     * Get escaped arguments for the shell, e.g. 'indexer:reindex' 'catalog_product_price'
-     *
-     * @param string[] $words
-     * @return string
-     */
-    public function toShellArgs(array $words): string
-    {
-        return implode(' ', array_map('escapeshellarg', $words));
-    }
 }
