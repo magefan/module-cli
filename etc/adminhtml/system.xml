@@ -13,7 +13,8 @@
             <tab>magefan</tab>
             <resource>Magefan_Cli::mfcli_config</resource>
             <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-                <label>General Configuration</label>
+                <label>General</label>
+                <attribute type="expanded">1</attribute>
                 <field id="version" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <frontend_model>Magefan\Cli\Block\Adminhtml\System\Config\Form\Info</frontend_model>
                 </field>
@@ -21,7 +22,7 @@
                     <label>Enable Extension</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="key" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="key" translate="label" type="text" sortOrder="25" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Product Key</label>
                     <frontend_model>Magefan\Community\Block\Adminhtml\System\Config\Form\ProductKeyField</frontend_model>
                 </field>

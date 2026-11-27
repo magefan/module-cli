@@ -2,10 +2,10 @@
     "name": "magefan/module-cli",
     "description": "CLI in Magento 2 admin panel",
     "require": {
-        "magefan/module-community" : ">=2.1.30"
+        "magefan/module-community" : ">=2.4.15"
     },
     "type": "magento2-module",
-    "version": "2.1.4",
+    "version": "2.2.0",
     "autoload": {
         "files": [ "registration.php" ],
         "psr-4": {

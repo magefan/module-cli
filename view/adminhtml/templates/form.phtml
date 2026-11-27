@@ -3,6 +3,14 @@
  * Copyright © Magefan (support@magefan.com). All rights reserved.
  * Please visit Magefan.com for license details (https://magefan.com/end-user-license-agreement).
  */
+
+/** @var \Magento\Framework\Escaper $escaper */
+?>
+<?php
+if (!isset($escaper)) {
+    /* Compatibility fix for old Magento versions */
+    $escaper = $block;
+}
 ?>
 
 <?php
@@ -24,7 +32,7 @@ $script = '';
     <div class="messages">
         <div class="message message-error error">
             <div data-ui-id="messages-message-error">
-                <?= $block->escapeHtml(__(strrev(' ot etagivan esaelp noisnetxe eht elbane ot ,delbasid si ecafretnI eniL dnammoC nafegaM'))) ?><a href="<?= $block->escapeUrl($url) ?>" target="_blank"><?= $block->escapeHtml(__(strrev('ecafretnI eniL dnammoC > snoisnetxE nafegaM > noitarugifnoC > serotS'))) ?></a>
+                <?= $escaper->escapeHtml(__(strrev(' ot etagivan esaelp noisnetxe eht elbane ot ,delbasid si ecafretnI eniL dnammoC nafegaM'))) ?><a href="<?= $escaper->escapeUrl($url) ?>" target="_blank"><?= $escaper->escapeHtml(__(strrev('ecafretnI eniL dnammoC > snoisnetxE nafegaM > noitarugifnoC > serotS'))) ?></a>
             </div>
         </div>
     </div>
@@ -32,7 +40,7 @@ $script = '';
     <div class="messages">
         <div class="message message-error error">
             <div data-ui-id="messages-message-error">
-                <?= $block->escapeHtml(__('There are no allowed commands to execute for the current user.')) ?>
+                <?= $escaper->escapeHtml(__('There are no allowed commands to execute for the current user.')) ?>
             </div>
         </div>
     </div>
@@ -59,15 +67,15 @@ $script = '';
                 <div class="entry-edit form-inline">
                     <fieldset class="fieldset admin__fieldset ">
                         <legend class="admin__legend legend">
-                            <span><?php echo $block->escapeHtml(__('Current User Identity Verification')) ?></span>
+                            <span><?php echo $escaper->escapeHtml(__('Current User Identity Verification')) ?></span>
                         </legend>
                         <br>
                         <div class="messages">
                         </div>
                         <div class="admin__field field field-current_password  required _required" >
-                            <label class="label admin__field-label" for="user_current_password"><span><?php echo $block->escapeHtml(__('Your Password')) ?></span></label>
+                            <label class="label admin__field-label" for="user_current_password"><span><?php echo $escaper->escapeHtml(__('Your Password')) ?></span></label>
                             <div class="admin__field-control control">
-                                <input id="user_current_password" name="current_password" value="" title="<?php echo $block->escapeHtml(__('Your Password')) ?>" class="input-text " type="password" >
+                                <input id="user_current_password" name="current_password" value="" title="<?php echo $escaper->escapeHtml(__('Your Password')) ?>" class="input-text " type="password" >
                             </div>
                         </div>
                     </fieldset>
@@ -81,21 +89,21 @@ $script = '';
             <div class="history-hld"></div>
             <div class="input-hld">
                 <?php if ($exec) { ?>
-                    <?php echo $block->escapeHtml(__('Enter Command:')) ?><input id="command" />
+                    <?php echo $escaper->escapeHtml(__('Enter Command:')) ?><input id="command" />
                 <?php } else { ?>
-                    <?php echo $block->escapeHtml(__('This command line is not accessible. Exec function is not allowed in PHP settings. Please use the standard CLI interface.')) ?>
+                    <?php echo $escaper->escapeHtml(__('This command line is not accessible. Exec function is not allowed in PHP settings. Please use the standard CLI interface.')) ?>
                 <?php } ?>
             </div>
         </div>
         <div id="command-list">
             <ul>
                 <?php if (count($mostUsed)) { ?>
-                    <p><?= $block->escapeHtml(__('Most Used Commands')) ?></p>
+                    <p><?= $escaper->escapeHtml(__('Most Used Commands')) ?></p>
                     <?php foreach ($mostUsed as $command) { ?>
                         <?php if ($command) { ?>
                             <li>
-                                <span class="execute-label"><?= $block->escapeHtml($command) ?></span>
-                                <span class="execute" title="<?= $block->escapeHtml('Execute') ?>" data-name="<?= $block->escapeHtml($command) ?>">▶</span>
+                                <span class="execute-label"><?= $escaper->escapeHtml($command) ?></span>
+                                <span class="execute" title="<?= $escaper->escapeHtml('Execute') ?>" data-name="<?= $escaper->escapeHtml($command) ?>">▶</span>
                             </li>
                         <?php } ?>
                     <?php } ?>
@@ -104,8 +112,8 @@ $script = '';
                 <?php foreach ($commands as $command) { ?>
                     <?php if ($command) { ?>
                         <li>
-                            <span class="execute-label"><?= $block->escapeHtml($command) ?></span>
-                            <span class="execute"  title="<?= $block->escapeHtml('Execute') ?>" data-name="<?= $block->escapeHtml($command) ?>">▶</span>
+                            <span class="execute-label"><?= $escaper->escapeHtml($command) ?></span>
+                            <span class="execute"  title="<?= $escaper->escapeHtml('Execute') ?>" data-name="<?= $escaper->escapeHtml($command) ?>">▶</span>
                         </li>
                     <?php } ?>
                 <?php } ?>
@@ -183,7 +191,7 @@ $script = '';
 		    	}
 
 		        $.ajax({
-                    url: '" . $block->escapeUrl($block->getUrl('*/*/cli')) . "',
+                    url: '" . $escaper->escapeUrl($block->getUrl('*/*/cli')) . "',
                     data : {command:el.val(),current_password:$('#user_current_password').val(),form_key:$('input[name=\"form_key\"]').val()},
                     type: 'POST',
                     dataType: 'json',
@@ -194,7 +202,7 @@ $script = '';
                         addContent('<strong>$ </strong>' + el.val() + '<br/>');
                         addContent(data.message);
                     } else {
-                        alert('" . $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) . "');
+                        alert('" . $escaper->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) . "');
                     }
                     if (data && data.newFormKey) {
                         $('input[name=\"form_key\"]').val(data.newFormKey);
@@ -219,7 +227,7 @@ $script = '';
                     confirm: function() {
 
                         $.ajax({
-                            url: '" . $block->escapeUrl($block->getUrl('*/*/cli')) . "',
+                            url: '" . $escaper->escapeUrl($block->getUrl('*/*/cli')) . "',
                             data: {
                                 command: 'php ' + command,
                                 current_password: $('#user_current_password').val(),
@@ -234,7 +242,7 @@ $script = '';
                                 addContent('<strong>$ </strong>' + command + '<br/>');
                                 addContent(data.message);
                             } else {
-                                alert('" . $block->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) . "');
+                                alert('" . $escaper->escapeHtml(__('Unexpected error. Please refresh the page or try later.')) . "');
                             }
 
                             if (data && data.newFormKey) {
